@@ -1,0 +1,45 @@
+name:                ebook-metadata
+synopsis:            Parse metadata from ebooks, e.g. EPUB
+version:             0.0.1.0
+github:              akirak/ebook-metadata
+homepage:            https://github.com/akirak/ebook-metadata
+license:             BSD3
+author:              Akira Komamura
+maintainer:          Akira Komamura
+copyright:           Akira Komamura
+category:            codec
+extra-source-files:
+  - README.md
+
+ghc-options:
+  - -Wall
+  - -fno-warn-name-shadowing
+
+dependencies:
+  - base >= 4.11 && < 5
+
+library:
+  source-dirs: src
+  dependencies: []
+
+executables:
+  ebook-metadata:
+    main:            Main.hs
+    source-dirs:     app
+    ghc-options:
+      - -threaded
+      - -O2
+      - -rtsopts
+    dependencies:
+      - ebook-metadata
+
+tests:
+  ebook-metadata-tests:
+    source-dirs:   test
+    main:          Main.hs
+    ghc-options:
+      - -Wall
+      - -threaded
+    dependencies:
+      - ebook-metadata
+      - hedgehog
