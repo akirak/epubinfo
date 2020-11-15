@@ -27,4 +27,6 @@ cabal.project.local
 .HTF/
 .ghc.environment.*
 
+testdata/
+
 .pre-commit-config.yaml

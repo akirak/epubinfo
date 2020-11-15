@@ -15,12 +15,25 @@ ghc-options:
   - -Wall
   - -fno-warn-name-shadowing
 
+default-extensions:
+  - NoImplicitPrelude
+  - RecordWildCards
+  - OverloadedStrings
+  - PatternGuards
+
 dependencies:
   - base >= 4.11 && < 5
+  - protolude
+  - aeson
+  - bytestring
+  - text
 
 library:
   source-dirs: src
-  dependencies: []
+  dependencies:
+    - zip-archive
+    - xml-conduit
+    - containers
 
 executables:
   ebook-metadata:
@@ -32,14 +45,16 @@ executables:
       - -rtsopts
     dependencies:
       - ebook-metadata
+      # - bytestring
+      # - aeson
 
 tests:
   ebook-metadata-tests:
     source-dirs:   test
-    main:          Main.hs
+    main:          Spec.hs
     ghc-options:
       - -Wall
       - -threaded
     dependencies:
       - ebook-metadata
-      - hedgehog
+      - hspec
