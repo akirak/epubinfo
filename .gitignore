@@ -26,3 +26,5 @@ cabal.sandbox.config
 cabal.project.local
 .HTF/
 .ghc.environment.*
+
+.pre-commit-config.yaml
