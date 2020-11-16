@@ -20,3 +20,11 @@ Then run Nix to install the executable:
 ``` shell
 nix-env -if . -A exe
 ```
+
+## Usage
+
+Run `epub2json` executable with an input file:
+
+``` shell
+epub2json YourEbookFile.epub
+```
