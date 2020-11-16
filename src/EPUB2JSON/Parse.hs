@@ -1,5 +1,5 @@
 -- |
-module EbookMetadata.EPUB.Parse
+module EPUB2JSON.Parse
   ( parseEPUBStream,
     EPUBParseException (..),
   )
@@ -9,7 +9,7 @@ import qualified Codec.Archive.Zip as Z
 import qualified Data.Map as M
 import Data.Text (pack, unpack)
 import qualified Data.Text.Lazy.Encoding as LT
-import EbookMetadata.EPUB.Types
+import EPUB2JSON.Types
 import Protolude
 import qualified Text.XML as X
 import qualified Text.XML.Cursor as C

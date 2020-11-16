@@ -1,24 +1,23 @@
 { compiler ? "ghc884" }:
-
 let
   sources = import ./nix/sources.nix;
-  pkgs = import sources.nixpkgs {};
+  pkgs = import sources.nixpkgs { };
 
   gitignore = pkgs.nix-gitignore.gitignoreSourcePure [ ./.gitignore ];
 
   myHaskellPackages = pkgs.haskell.packages.${compiler}.override {
-    overrides = hself: hsuper: {
-      "ebook-metadata" =
+    overrides = hself: _hsuper: {
+      "epub2json" =
         hself.callCabal2nix
-          "ebook-metadata"
+          "epub2json"
           (gitignore ./.)
-          {};
+          { };
     };
   };
 
   shell = myHaskellPackages.shellFor {
     packages = p: [
-      p."ebook-metadata"
+      p."epub2json"
     ];
     buildInputs = [
       pkgs.haskellPackages.cabal-install
@@ -31,11 +30,11 @@ let
     withHoogle = true;
   };
 
-  exe = pkgs.haskell.lib.justStaticExecutables (myHaskellPackages."ebook-metadata");
+  exe = pkgs.haskell.lib.justStaticExecutables (myHaskellPackages."epub2json");
 
   docker = pkgs.dockerTools.buildImage {
-    name = "ebook-metadata";
-    config.Cmd = [ "${exe}/bin/ebook-metadata" ];
+    name = "epub2json";
+    config.Cmd = [ "${exe}/bin/epub2json" ];
   };
 in
 {
@@ -43,5 +42,5 @@ in
   inherit exe;
   inherit docker;
   inherit myHaskellPackages;
-  "ebook-metadata" = myHaskellPackages."ebook-metadata";
+  "epub2json" = myHaskellPackages."epub2json";
 }

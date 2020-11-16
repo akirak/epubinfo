@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 -- | Data types for EPUB metadata.
-module EbookMetadata.EPUB.Types where
+module EPUB2JSON.Types where
 
 import Data.Aeson (ToJSON (..))
 import qualified Data.Aeson as A

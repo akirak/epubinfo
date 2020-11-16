@@ -1,14 +1,14 @@
 -- |
-module EbookMetadata.EPUB
+module EPUB2JSON
   ( readEPUBFile,
     parseEPUBStream,
-    module EbookMetadata.EPUB.Types,
+    module EPUB2JSON.Types,
   )
 where
 
 import qualified Data.ByteString.Lazy as LB
-import EbookMetadata.EPUB.Parse
-import EbookMetadata.EPUB.Types
+import EPUB2JSON.Parse
+import EPUB2JSON.Types
 import Protolude
 
 readEPUBFile :: FilePath -> IO EPUB

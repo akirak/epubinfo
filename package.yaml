@@ -1,8 +1,8 @@
-name:                ebook-metadata
-synopsis:            Parse metadata from ebooks, e.g. EPUB
+name:                epub2json
+synopsis:            Convert EPUB metadata to JSON
 version:             0.0.1.0
 github:              akirak/ebook-metadata
-homepage:            https://github.com/akirak/ebook-metadata
+homepage:            https://github.com/akirak/epub2json
 license:             BSD3
 author:              Akira Komamura
 maintainer:          Akira Komamura
@@ -28,33 +28,15 @@ dependencies:
   - bytestring
   - text
 
-library:
-  source-dirs: src
-  dependencies:
-    - zip-archive
-    - xml-conduit
-    - containers
-
 executables:
-  ebook-metadata:
+  epub2json:
     main:            Main.hs
-    source-dirs:     app
+    source-dirs:     src
     ghc-options:
       - -threaded
       - -O2
       - -rtsopts
     dependencies:
-      - ebook-metadata
-      # - bytestring
-      # - aeson
-
-tests:
-  ebook-metadata-tests:
-    source-dirs:   test
-    main:          Spec.hs
-    ghc-options:
-      - -Wall
-      - -threaded
-    dependencies:
-      - ebook-metadata
-      - hspec
+      - zip-archive
+      - xml-conduit
+      - containers
