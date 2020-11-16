@@ -7,13 +7,14 @@ cabal-version: 1.12
 name:           epub2json
 version:        0.0.1.0
 synopsis:       Convert EPUB metadata to JSON
-category:       codec
+category:       codec program
 homepage:       https://github.com/akirak/epub2json
 bug-reports:    https://github.com/akirak/ebook-metadata/issues
 author:         Akira Komamura
 maintainer:     Akira Komamura
-copyright:      Akira Komamura
+copyright:      Copyright (c) 2020 Akira Komamura
 license:        BSD3
+license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md

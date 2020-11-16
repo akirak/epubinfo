@@ -4,10 +4,11 @@ version:             0.0.1.0
 github:              akirak/ebook-metadata
 homepage:            https://github.com/akirak/epub2json
 license:             BSD3
+license-file:        LICENSE
 author:              Akira Komamura
 maintainer:          Akira Komamura
-copyright:           Akira Komamura
-category:            codec
+copyright:           Copyright (c) 2020 Akira Komamura
+category:            codec program
 extra-source-files:
   - README.md
 
