@@ -1,4 +1,4 @@
-# ebook-metadata
+# epub2json
 
 ![CI](https://github.com/akirak/epub2json/workflows/CI/badge.svg)
 [![Cachix Cache](https://img.shields.io/badge/cachix-akirak-blue.svg)](https://akirak.cachix.org)
