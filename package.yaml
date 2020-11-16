@@ -41,3 +41,4 @@ executables:
       - zip-archive
       - xml-conduit
       - containers
+      - optparse-simple

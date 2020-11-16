@@ -2,15 +2,19 @@ module Main where
 
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Lazy.Char8 as LBC8
+import Data.Version (showVersion)
 import EPUB2JSON
+import Options.Applicative.Simple
+import Paths_epub2json (version)
 import Protolude
-import System.Environment (getArgs)
 
 main = do
-  args <- getArgs
-  case args of
-    -- TODO
-    [] -> return ()
-    (file : _) -> do
-      metadata <- readEPUBFile file
-      LBC8.putStrLn $ A.encode metadata
+  (file, ()) <-
+    simpleOptions
+      ("epub2json " ++ showVersion version)
+      "epub2json"
+      "Convert EPUB metadata to JSON"
+      (strArgument (metavar "FILE"))
+      empty
+  metadata <- readEPUBFile file
+  LBC8.putStrLn $ A.encode metadata
