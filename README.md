@@ -18,7 +18,13 @@ cachix use akirak
 Then run Nix to install the executable:
 
 ``` shell
-nix-env -if . -A exe
+nix-env -if .
+```
+
+You can also run it with a flake:
+
+``` shell
+nix run --no-update-lock-file github:akirak/epub2json
 ```
 
 ## Usage
