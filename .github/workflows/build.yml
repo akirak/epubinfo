@@ -18,4 +18,4 @@ jobs:
       with:
         name: akirak
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
-    - run: nix-build -A exe
+    - run: nix-build
