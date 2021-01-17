@@ -46,4 +46,8 @@ instance ToJSON LinkTarget where
         }
 
 instance ToJSON EPUB where
-  toEncoding = A.genericToEncoding A.defaultOptions
+  toEncoding =
+    A.genericToEncoding $
+      A.defaultOptions
+        { A.omitNothingFields = True
+        }
