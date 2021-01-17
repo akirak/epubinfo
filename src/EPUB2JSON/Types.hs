@@ -22,11 +22,11 @@ data EPUB = EPUB
     publisher :: Maybe Text,
     -- type
     -- , dcAttributes :: Map Text Text
-    meta :: Map Text [Text]
+    meta :: Map Text [Text],
     -- TODO: Parse links
     -- , links :: Map Text LinkTarget
     -- TODO: Parse the JSON object of calibre:user_categories
-    -- , calibreUserCategories
+    calibreUserCategories :: Maybe (Map Text [Text])
   }
   deriving (Generic)
 
