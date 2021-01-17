@@ -77,6 +77,7 @@ analyseMetadata c =
       language = c C.$/ languageList,
       creator = c C.$/ creatorList,
       contributor = c C.$/ contributorList,
+      publisher = listToMaybe $ c C.$/ maybePublisher,
       date = listToMaybe $ c C.$/ maybeDate,
       subject = c C.$/ subjectList,
       meta = M.fromList $ groupByKey $ catMaybes $ c C.$/ metaAlist
@@ -102,6 +103,9 @@ analyseMetadata c =
         C.&/ C.content
     maybeDate =
       C.element "{http://purl.org/dc/elements/1.1/}date"
+        C.&/ C.content
+    maybePublisher =
+      C.element "{http://purl.org/dc/elements/1.1/}publisher"
         C.&/ C.content
     metaAlist =
       C.element "{http://www.idpf.org/2007/opf}meta"

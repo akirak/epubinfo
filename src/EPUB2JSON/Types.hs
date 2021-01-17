@@ -19,6 +19,7 @@ data EPUB = EPUB
     creator :: [Text],
     date :: Maybe Text,
     subject :: [Text],
+    publisher :: Maybe Text,
     -- type
     -- , dcAttributes :: Map Text Text
     meta :: Map Text [Text]
