@@ -6,8 +6,10 @@ module EPUB2JSON.Parse
 where
 
 import qualified Codec.Archive.Zip as Z
+import qualified Data.Aeson as A
 import qualified Data.Map as M
 import Data.Text (pack, unpack)
+import qualified Data.Text.Encoding as T
 import qualified Data.Text.Lazy.Encoding as LT
 import EPUB2JSON.Types
 import Protolude
@@ -77,11 +79,17 @@ analyseMetadata c =
       language = c C.$/ languageList,
       creator = c C.$/ creatorList,
       contributor = c C.$/ contributorList,
+      publisher = listToMaybe $ c C.$/ maybePublisher,
       date = listToMaybe $ c C.$/ maybeDate,
       subject = c C.$/ subjectList,
-      meta = M.fromList $ groupByKey $ catMaybes $ c C.$/ metaAlist
+      meta = meta,
+      calibreUserCategories =
+        case M.lookup "calibre:user_categories" meta of
+          Just [t] -> decodeText t
+          _ -> mempty
     }
   where
+    meta = M.fromList $ groupByKey $ catMaybes $ c C.$/ metaAlist
     identifierList =
       C.element "{http://purl.org/dc/elements/1.1/}identifier"
         C.&/ C.content
@@ -102,6 +110,9 @@ analyseMetadata c =
         C.&/ C.content
     maybeDate =
       C.element "{http://purl.org/dc/elements/1.1/}date"
+        C.&/ C.content
+    maybePublisher =
+      C.element "{http://purl.org/dc/elements/1.1/}publisher"
         C.&/ C.content
     metaAlist =
       C.element "{http://www.idpf.org/2007/opf}meta"
@@ -126,3 +137,6 @@ metaFromNode (X.NodeElement e)
     (X.NodeContent content : _) <- X.elementNodes e =
     Just (property, content)
   | otherwise = Nothing
+
+decodeText :: A.FromJSON a => Text -> Maybe a
+decodeText = A.decodeStrict . T.encodeUtf8

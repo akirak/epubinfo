@@ -19,13 +19,14 @@ data EPUB = EPUB
     creator :: [Text],
     date :: Maybe Text,
     subject :: [Text],
+    publisher :: Maybe Text,
     -- type
     -- , dcAttributes :: Map Text Text
-    meta :: Map Text [Text]
+    meta :: Map Text [Text],
     -- TODO: Parse links
     -- , links :: Map Text LinkTarget
     -- TODO: Parse the JSON object of calibre:user_categories
-    -- , calibreUserCategories
+    calibreUserCategories :: Maybe (Map Text [Text])
   }
   deriving (Generic)
 
@@ -45,4 +46,8 @@ instance ToJSON LinkTarget where
         }
 
 instance ToJSON EPUB where
-  toEncoding = A.genericToEncoding A.defaultOptions
+  toEncoding =
+    A.genericToEncoding $
+      A.defaultOptions
+        { A.omitNothingFields = True
+        }
