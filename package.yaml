@@ -1,7 +1,7 @@
 name:                epub2json
 synopsis:            Convert EPUB metadata to JSON
-version:             0.0.1.0
-github:              akirak/ebook-metadata
+version:             0.0.1.1
+github:              akirak/epub2json
 homepage:            https://github.com/akirak/epub2json
 license:             BSD3
 license-file:        LICENSE
