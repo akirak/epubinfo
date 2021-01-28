@@ -7,6 +7,7 @@ where
 
 import qualified Codec.Archive.Zip as Z
 import qualified Data.Aeson as A
+import qualified Data.ByteString.Lazy.Char8 as LB
 import qualified Data.Map as M
 import Data.Text (pack, unpack)
 import qualified Data.Text.Encoding as T
@@ -46,8 +47,14 @@ readXmlFromArchive relativePath archive =
 
 parseXml :: FilePath -> LByteString -> Either EPUBParseException X.Document
 parseXml relativePath src =
-  either (Left . EPUBXmlDecodeError relativePath) Right (LT.decodeUtf8' src)
+  either (Left . EPUBXmlDecodeError relativePath) Right (LT.decodeUtf8' (checkBom src))
     >>= either (Left . EPUBXmlParseError relativePath) Right . X.parseText X.def
+
+checkBom :: LByteString -> LByteString
+checkBom lbs =
+  if LB.isPrefixOf (LB.pack "\xef\xbb\xbf") lbs
+    then LB.drop 3 lbs
+    else lbs
 
 getOpfPath :: C.Cursor -> Either EPUBParseException Text
 getOpfPath =
