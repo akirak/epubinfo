@@ -28,6 +28,7 @@ dependencies:
   - aeson
   - bytestring
   - text
+  - exceptions
 
 executables:
   epub2json:

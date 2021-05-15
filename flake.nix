@@ -42,7 +42,7 @@
             pkgs.niv
             pkgs.nixpkgs-fmt
           ];
-          withHoogle = false;
+          withHoogle = true;
           # TODO: Add shellHook for installing the pre-commit hook
           # currently defined in setup-hooks.nix
           #

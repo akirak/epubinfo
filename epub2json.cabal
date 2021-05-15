@@ -27,8 +27,10 @@ executable epub2json
   main-is: Main.hs
   other-modules:
       EPUB2JSON
-      EPUB2JSON.Parse
-      EPUB2JSON.Types
+      EPUB2JSON.Document
+      EPUB2JSON.Document.Container
+      EPUB2JSON.Document.Opf
+      EPUB2JSON.Monad
       Paths_epub2json
   hs-source-dirs:
       src
@@ -39,6 +41,7 @@ executable epub2json
     , base >=4.11 && <5
     , bytestring
     , containers
+    , exceptions
     , optparse-simple
     , protolude
     , text

@@ -8,6 +8,7 @@ import Options.Applicative.Simple
 import Paths_epub2json (version)
 import Protolude
 
+main :: IO ()
 main = do
   (file, ()) <-
     simpleOptions
@@ -16,5 +17,11 @@ main = do
       "Convert EPUB metadata to JSON"
       (strArgument (metavar "FILE"))
       empty
-  metadata <- readEPUBFile file
+  metadata <-
+    withEPUBFile file $
+      do
+        readContainer
+        >>= getOpfPath
+        >>= readOpfDocument
+        >>= getMetadataFromOpf
   LBC8.putStrLn $ A.encode metadata
