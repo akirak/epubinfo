@@ -10,6 +10,7 @@ This is a small command line program which extract various information from an E
 It has the following commands:
 
 - `metadata`, which prints metadata of the file in JSON.
+- `toc`, which prints the table of contents in Org or Markdown.
 
 At present, EPUB 3 is only officially supported.
 
@@ -41,4 +42,10 @@ nix run --no-update-lock-file github:akirak/epubinfo
 
 ``` shell
 epubinfo metadata YourEbookFile.epub
+```
+
+### Printing the table of contents in plain text
+
+``` shell
+epubinfo toc YourEbookFile.epub
 ```
