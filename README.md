@@ -44,6 +44,46 @@ nix run --no-update-lock-file github:akirak/epubinfo
 epubinfo metadata YourEbookFile.epub
 ```
 
+An example output formatted with `jq`:
+
+```
+{
+  "identifier": [
+    "https://leanpub.com/the-devops-toolkit-catalog"
+  ],
+  "title": [
+    "The DevOps Toolkit: Catalog, Patterns, And Blueprints"
+  ],
+  "language": [
+    "en"
+  ],
+  "contributor": [],
+  "creator": [
+    "Viktor Farcic and Darin Pope"
+  ],
+  "date": "2020-06-11",
+  "subject": [],
+  "publisher": "leanpub.com",
+  "meta": {
+    "cover": [
+      "cover_image"
+    ],
+    "dcterms:modified": [
+      "2021-04-08T17:35:52Z"
+    ],
+    "file-as": [
+      "Viktor Farcic and Darin Pope"
+    ],
+    "role": [
+      "aut"
+    ],
+    "title-type": [
+      "main"
+    ]
+  }
+}
+```
+
 ### Printing the table of contents in plain text
 
 ``` shell
