@@ -21,6 +21,7 @@ import EPUB2JSON.Monad
 import Protolude
 import qualified Text.XML as X
 import qualified Text.XML.Cursor as C
+import Prelude (error)
 
 data EPUBMetadata = EPUBMetadata
   { identifier :: [Text],
@@ -152,6 +153,8 @@ metaFromNode (X.NodeElement e)
     (X.NodeContent content : _) <- X.elementNodes e =
     Just (property, content)
   | otherwise = Nothing
+-- TODO: Properly throw an exception
+metaFromNode _ = error "metaFromNode: Expecting an element"
 
 decodeJsonText :: A.FromJSON a => Text -> Maybe a
 decodeJsonText = A.decodeStrict . T.encodeUtf8
