@@ -20,12 +20,11 @@ import Control.Monad.Catch
 import qualified Control.Monad.Catch as C
 import Control.Monad.Catch.Pure (CatchT, runCatchT)
 import qualified Data.ByteString.Lazy.Char8 as LB
-import qualified Data.Text.Encoding as T
 import qualified Data.Text.Lazy.Encoding as LT
 import Protolude
 import qualified Text.XML as X
 
-newtype EPUBM a = EPUBM {unEPUBM :: CatchT (Reader Z.Archive) a}
+newtype EPUBM a = EPUBM (CatchT (Reader Z.Archive) a)
   deriving (Functor, Applicative, Monad, MonadThrow)
 
 -- | Do a certain operation on an EPUB archive.

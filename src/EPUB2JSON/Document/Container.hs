@@ -10,7 +10,6 @@ import Control.Monad.Catch (MonadThrow (..))
 import Data.Text (unpack)
 import EPUB2JSON.Monad
 import Protolude
-import qualified Text.XML as X
 import qualified Text.XML.Cursor as C
 
 newtype Container = Container C.Cursor
