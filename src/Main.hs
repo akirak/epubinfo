@@ -27,13 +27,8 @@ main = do
           fileArgument
   runCmd
 
+-- | Print metadata in JSON
 printMetadata :: FilePath -> IO ()
 printMetadata file = do
-  metadata <-
-    withEPUBFile file $
-      do
-        readContainer
-        >>= getOpfPath
-        >>= readOpfDocument
-        >>= getMetadataFromOpf
+  metadata <- withEPUBFile file getMetadata
   LBC8.putStrLn $ A.encode metadata
