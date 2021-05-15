@@ -64,3 +64,30 @@ and `--depth` for specifying a maximum depth:
 ``` shell
 epubinfo toc --org --depth=1 --checkbox YourEbookFile.epub
 ```
+
+An example output:
+
+```
+- [ ] Introduction
+- [ ] Infrastructure as Code (IaC)
+- [ ] Creating And Managing Google Kubernetes Engine (GKE) Clusters With Terraform
+- [ ] Creating And Managing AWS Elastic Kubernetes Service (EKS) Clusters With Terraform
+- [ ] Creating And Managing Azure Kubernetes Service (AKS) Clusters With Terraform
+- [ ] There Is More About Infrastructure as Code (IaC)
+- [ ] Packaging, Deploying, And Managing Applications
+- [ ] Using Helm As A Package Manager For Kubernetes
+- [ ] There Is More About Packaging, Deploying, And Managing Applications
+- [ ] Setting Up A Local Development Environment
+- [ ] Exploring Serverless Computing
+- [ ] Using Managed Functions As A Service (FaaS)
+- [ ] Using Managed Containers As A Service (CaaS)
+- [ ] Using Self-Managed Containers As A Service (CaaS)
+- [ ] There Is More About Serverless
+- [ ] Using Centralized Logging
+- [ ] Deploying Applications Using GitOps Principles
+- [ ] Applying GitOps Principles Using Argo CD
+- [ ] There Is More About GitOps
+- [ ] Applying Progressive Delivery
+- [ ] Using Argo Rollouts To Deploy Applications
+- [ ] This Is NOT The End
+```
