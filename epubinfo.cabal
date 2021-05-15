@@ -29,6 +29,7 @@ executable epubinfo
       EPUBInfo
       EPUBInfo.Document
       EPUBInfo.Document.Container
+      EPUBInfo.Document.Nav
       EPUBInfo.Document.Opf
       EPUBInfo.Monad
       EPUBInfo.Utils
@@ -43,6 +44,7 @@ executable epubinfo
     , bytestring
     , containers
     , exceptions
+    , filepath
     , optparse-simple
     , protolude
     , text

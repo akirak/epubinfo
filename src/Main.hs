@@ -1,5 +1,6 @@
 module Main (main) where
 
+import qualified Data.Text.IO as T
 import Data.Version (showVersion)
 import EPUBInfo
 import Options.Applicative.Simple
@@ -23,9 +24,19 @@ main = do
           "Show metadata of a file"
           printMetadata
           fileArgument
+        addCommand
+          "toc"
+          "Print the table of contents"
+          printTableOfContents
+          fileArgument
   runCmd
 
 -- | Print metadata in JSON
 printMetadata :: FilePath -> IO ()
 printMetadata file =
   withEPUBFile file getMetadata >>= printJson
+
+-- | Print the table of contents
+printTableOfContents :: FilePath -> IO ()
+printTableOfContents file =
+  withEPUBFile file getTableOfContents >>= T.putStr . tocToOrg
