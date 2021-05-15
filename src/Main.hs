@@ -5,16 +5,16 @@ import qualified Data.ByteString.Lazy.Char8 as LBC8
 import Data.Version (showVersion)
 import EPUB2JSON
 import Options.Applicative.Simple
-import Paths_epub2json (version)
+import Paths_epubinfo (version)
 import Protolude
 
 main :: IO ()
 main = do
   (file, ()) <-
     simpleOptions
-      ("epub2json " ++ showVersion version)
-      "epub2json"
-      "Convert EPUB metadata to JSON"
+      ("epubinfo " ++ showVersion version)
+      "epubinfo"
+      "Extract metadata from EPUB"
       (strArgument (metavar "FILE"))
       empty
   metadata <-

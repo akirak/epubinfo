@@ -1,13 +1,13 @@
-name:                epub2json
-synopsis:            Convert EPUB metadata to JSON
+name:                epubinfo
+synopsis:            Extract information from EPUB
 version:             0.0.1.1
-github:              akirak/epub2json
-homepage:            https://github.com/akirak/epub2json
+github:              akirak/epubinfo
+homepage:            https://github.com/akirak/epubinfo
 license:             BSD3
 license-file:        LICENSE
 author:              Akira Komamura
 maintainer:          Akira Komamura
-copyright:           Copyright (c) 2020 Akira Komamura
+copyright:           Copyright (c) 2020-2021 Akira Komamura
 category:            codec program
 extra-source-files:
   - README.md
@@ -31,7 +31,7 @@ dependencies:
   - exceptions
 
 executables:
-  epub2json:
+  epubinfo:
     main:            Main.hs
     source-dirs:     src
     ghc-options:

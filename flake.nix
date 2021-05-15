@@ -13,26 +13,26 @@
         gitignore = pkgs.nix-gitignore.gitignoreSourcePure [ ./.gitignore ];
         myHaskellPackages = pkgs.haskell.packages.ghc884.override {
           overrides = hself: _hsuper: {
-            "epub2json" =
+            "epubinfo" =
               hself.callCabal2nix
-                "epub2json"
+                "epubinfo"
                 (gitignore ./.)
                 { };
           };
         };
       in
       rec {
-        packages.epub2json = pkgs.haskell.lib.justStaticExecutables myHaskellPackages.epub2json;
-        defaultPackage = packages.epub2json;
-        apps.epub2json = flake-utils.lib.mkApp {
-          drv = packages.epub2json;
+        packages.epubinfo = pkgs.haskell.lib.justStaticExecutables myHaskellPackages.epubinfo;
+        defaultPackage = packages.epubinfo;
+        apps.epubinfo = flake-utils.lib.mkApp {
+          drv = packages.epubinfo;
         };
-        defaultApp = apps.epub2json;
+        defaultApp = apps.epubinfo;
         lib.haskellPackages = myHaskellPackages;
-        lib.epub2json = lib.haskellPackages.epub2json;
+        lib.epubinfo = lib.haskellPackages.epubinfo;
         devShell = myHaskellPackages.shellFor {
           packages = p: [
-            p.epub2json
+            p.epubinfo
           ];
           buildInputs = [
             pkgs.haskellPackages.cabal-install
