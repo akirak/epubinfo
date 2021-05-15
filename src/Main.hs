@@ -1,4 +1,4 @@
-module Main where
+module Main (main) where
 
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Lazy.Char8 as LBC8
@@ -8,15 +8,27 @@ import Options.Applicative.Simple
 import Paths_epubinfo (version)
 import Protolude
 
+fileArgument :: Parser FilePath
+fileArgument = strArgument (metavar "FILE")
+
 main :: IO ()
 main = do
-  (file, ()) <-
+  (_, runCmd) <-
     simpleOptions
       ("epubinfo " ++ showVersion version)
       "epubinfo"
       "Extract metadata from EPUB"
-      (strArgument (metavar "FILE"))
-      empty
+      (pure ())
+      $ do
+        addCommand
+          "metadata"
+          "Show metadata of a file"
+          printMetadata
+          fileArgument
+  runCmd
+
+printMetadata :: FilePath -> IO ()
+printMetadata file = do
   metadata <-
     withEPUBFile file $
       do
