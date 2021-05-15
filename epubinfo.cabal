@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           epubinfo
-version:        0.0.1.1
+version:        0.0.2
 synopsis:       Extract information from EPUB
 category:       codec program
 homepage:       https://github.com/akirak/epubinfo
