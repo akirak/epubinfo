@@ -11,6 +11,7 @@ module EPUBInfo.Document.Nav
     toTableOfContents,
 
     -- * Formatting
+    TocRenderOptions (..),
     tocToOrg,
     tocToMarkdown,
   )
@@ -105,21 +106,29 @@ xmlToTocNodes = goList
             tocEntryHref = href
           }
 
-tocToOrg :: TableOfContents -> Text
-tocToOrg (TableOfContents nodes) = tocToPlainText "-" 2 nodes
+data TocRenderOptions = TocRenderOptions
+  { tocCheckbox :: Bool,
+    tocMaxDepth :: Maybe Int
+  }
+  deriving (Show)
 
-tocToMarkdown :: TableOfContents -> Text
-tocToMarkdown (TableOfContents nodes) = tocToPlainText "-" 2 nodes
+tocToOrg :: TocRenderOptions -> TableOfContents -> Text
+tocToOrg opts (TableOfContents nodes) = tocToPlainText "-" 2 opts nodes
 
-tocToPlainText :: Text -> Int -> [TocNode] -> Text
-tocToPlainText bullet indentOffset = T.intercalate "\n" . map (go 0)
+tocToMarkdown :: TocRenderOptions -> TableOfContents -> Text
+tocToMarkdown opts (TableOfContents nodes) = tocToPlainText "-" 2 opts nodes
+
+tocToPlainText :: Text -> Int -> TocRenderOptions -> [TocNode] -> Text
+tocToPlainText bullet indentOffset opts = T.intercalate "\n" . map (go 0)
   where
     go level (TocNode entry children) =
       T.concat $
         [ T.replicate (indentOffset * level) (T.singleton ' '),
           bullet,
+          if tocCheckbox opts then " [ ]" else T.empty,
           T.singleton ' ',
           tocEntryTitle entry
         ]
-          ++ map (subnode level) children
-    subnode level child = T.cons '\n' (go (level + 1) child)
+          ++ case tocMaxDepth opts of
+            Just maxDepth | maxDepth == level + 1 -> []
+            _ -> map (T.cons '\n' . go (level + 1)) children
