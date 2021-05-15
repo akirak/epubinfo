@@ -1,17 +1,17 @@
 -- |
-module EPUB2JSON
+module EPUBInfo
   ( withEPUBFile,
     ZipExtractError (..),
-    module EPUB2JSON.Monad,
-    module EPUB2JSON.Document,
+    module EPUBInfo.Monad,
+    module EPUBInfo.Document,
   )
 where
 
 import qualified Codec.Archive.Zip as Z
 import Control.Monad.Catch
 import qualified Data.ByteString.Lazy as LB
-import EPUB2JSON.Document
-import EPUB2JSON.Monad
+import EPUBInfo.Document
+import EPUBInfo.Monad
 import Protolude
 import Prelude (String)
 

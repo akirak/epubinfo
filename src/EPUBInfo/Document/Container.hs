@@ -1,5 +1,5 @@
 -- |
-module EPUB2JSON.Document.Container
+module EPUBInfo.Document.Container
   ( Container,
     readContainer,
     getOpfPath,
@@ -8,7 +8,7 @@ where
 
 import Control.Monad.Catch (MonadThrow (..))
 import Data.Text (unpack)
-import EPUB2JSON.Monad
+import EPUBInfo.Monad
 import Protolude
 import qualified Text.XML.Cursor as C
 

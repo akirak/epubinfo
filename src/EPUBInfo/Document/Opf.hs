@@ -1,6 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
 
-module EPUB2JSON.Document.Opf
+module EPUBInfo.Document.Opf
   ( -- * Types
     EPUBMetadata (..),
 
@@ -17,7 +17,7 @@ import qualified Data.Aeson as A
 import qualified Data.Char as Char
 import qualified Data.Map as M
 import qualified Data.Text.Encoding as T
-import EPUB2JSON.Monad
+import EPUBInfo.Monad
 import Protolude
 import qualified Text.XML as X
 import qualified Text.XML.Cursor as C

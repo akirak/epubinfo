@@ -26,11 +26,11 @@ source-repository head
 executable epubinfo
   main-is: Main.hs
   other-modules:
-      EPUB2JSON
-      EPUB2JSON.Document
-      EPUB2JSON.Document.Container
-      EPUB2JSON.Document.Opf
-      EPUB2JSON.Monad
+      EPUBInfo
+      EPUBInfo.Document
+      EPUBInfo.Document.Container
+      EPUBInfo.Document.Opf
+      EPUBInfo.Monad
       Paths_epubinfo
   hs-source-dirs:
       src

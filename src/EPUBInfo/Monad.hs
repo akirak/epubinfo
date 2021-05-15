@@ -1,7 +1,7 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
 -- |
-module EPUB2JSON.Monad
+module EPUBInfo.Monad
   ( EPUBM,
     runEPUBM,
 

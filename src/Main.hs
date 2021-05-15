@@ -3,7 +3,7 @@ module Main (main) where
 import qualified Data.Aeson as A
 import qualified Data.ByteString.Lazy.Char8 as LBC8
 import Data.Version (showVersion)
-import EPUB2JSON
+import EPUBInfo
 import Options.Applicative.Simple
 import Paths_epubinfo (version)
 import Protolude
