@@ -1,7 +1,5 @@
 module Main (main) where
 
-import qualified Data.Aeson as A
-import qualified Data.ByteString.Lazy.Char8 as LBC8
 import Data.Version (showVersion)
 import EPUBInfo
 import Options.Applicative.Simple
@@ -29,6 +27,5 @@ main = do
 
 -- | Print metadata in JSON
 printMetadata :: FilePath -> IO ()
-printMetadata file = do
-  metadata <- withEPUBFile file getMetadata
-  LBC8.putStrLn $ A.encode metadata
+printMetadata file =
+  withEPUBFile file getMetadata >>= printJson

@@ -4,6 +4,9 @@ module EPUBInfo
     ZipExtractError (..),
     module EPUBInfo.Monad,
     module EPUBInfo.Document,
+
+    -- * Re-exporting utilities for your convenience
+    printJson,
   )
 where
 
@@ -12,6 +15,7 @@ import Control.Monad.Catch
 import qualified Data.ByteString.Lazy as LB
 import EPUBInfo.Document
 import EPUBInfo.Monad
+import EPUBInfo.Utils (printJson)
 import Protolude
 import Prelude (String)
 
