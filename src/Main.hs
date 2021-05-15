@@ -1,7 +1,9 @@
 module Main (main) where
 
+import qualified Data.Text.IO as T
 import Data.Version (showVersion)
 import EPUBInfo
+import GHC.IO.Encoding (setLocaleEncoding, utf8)
 import Options.Applicative.Simple
 import Paths_epubinfo (version)
 import Protolude
@@ -23,9 +25,20 @@ main = do
           "Show metadata of a file"
           printMetadata
           fileArgument
+        addCommand
+          "toc"
+          "Print the table of contents"
+          printTableOfContents
+          fileArgument
+  setLocaleEncoding utf8
   runCmd
 
 -- | Print metadata in JSON
 printMetadata :: FilePath -> IO ()
 printMetadata file =
   withEPUBFile file getMetadata >>= printJson
+
+-- | Print the table of contents
+printTableOfContents :: FilePath -> IO ()
+printTableOfContents file =
+  withEPUBFile file getTableOfContents >>= T.putStr . tocToOrg

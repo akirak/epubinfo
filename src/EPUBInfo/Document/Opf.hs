@@ -4,10 +4,15 @@ module EPUBInfo.Document.Opf
   ( -- * Types
     EPUBMetadata (..),
 
+    -- ** Exception types
+    OpfElementNotFound (..),
+    OpfAttributeNotFound (..),
+
     -- * Document
     OpfDocument,
     readOpfDocument,
     getMetadataFromOpf,
+    getNavDocumentPath,
   )
 where
 
@@ -16,12 +21,13 @@ import Data.Aeson (ToJSON (..))
 import qualified Data.Aeson as A
 import qualified Data.Char as Char
 import qualified Data.Map as M
+import Data.Text (unpack)
 import qualified Data.Text.Encoding as T
 import EPUBInfo.Monad
 import Protolude
 import qualified Text.XML as X
 import qualified Text.XML.Cursor as C
-import Prelude (error)
+import Prelude (String, error)
 
 data EPUBMetadata = EPUBMetadata
   { identifier :: [Text],
@@ -71,15 +77,24 @@ newtype OpfDocument = OpfDocument C.Cursor
 readOpfDocument :: FilePath -> EPUBM OpfDocument
 readOpfDocument path = OpfDocument . C.fromDocument <$> readXmlInArchive path
 
-data OpfNotFound = OpfNotFound
+newtype OpfElementNotFound = OpfElementNotFound
+  {opfElementNotFoundMissingElement :: String}
   deriving (Show, Typeable)
 
-instance Exception OpfNotFound
+instance Exception OpfElementNotFound
+
+data OpfAttributeNotFound = OpfAttributeNotFound
+  { opfAttributeNotFoundContext :: String,
+    opfAttributeNotFoundAttribute :: String
+  }
+  deriving (Show, Typeable)
+
+instance Exception OpfAttributeNotFound
 
 getMetadataFromOpf :: MonadThrow m => OpfDocument -> m EPUBMetadata
 getMetadataFromOpf (OpfDocument cursor) =
   case opfMetadata cursor of
-    [] -> throwM OpfNotFound
+    [] -> throwM $ OpfElementNotFound "metadata"
     (c : _) -> return $ toEPUBMetadata c
 
 opfMetadata :: C.Cursor -> [C.Cursor]
@@ -156,5 +171,37 @@ metaFromNode (X.NodeElement e)
 -- TODO: Properly throw an exception
 metaFromNode _ = error "metaFromNode: Expecting an element"
 
+-- | Return href attribute of the nav item.
+--
+-- Note that the result will be a relative path from the opf document.
+getNavDocumentPath :: MonadThrow m => OpfDocument -> m FilePath
+getNavDocumentPath (OpfDocument cursor) =
+  case opfManifest cursor of
+    [] -> throwM $ OpfElementNotFound "manifest"
+    (c : _) -> do
+      elementC <- findNavItem c
+      case C.attribute "href" elementC of
+        [] -> throwM $ OpfAttributeNotFound "item[properties=nav]" "href"
+        (value : _) -> return $ unpack value
+
+opfManifest :: C.Cursor -> [C.Cursor]
+opfManifest =
+  C.element "{http://www.idpf.org/2007/opf}package"
+    C.&/ C.element "{http://www.idpf.org/2007/opf}manifest"
+
+findNavItem :: MonadThrow m => C.Cursor -> m C.Cursor
+findNavItem manifestCursor =
+  case manifestCursor C.$/ navItem of
+    [] -> throwM $ OpfElementNotFound "item[properties=nav]"
+    (c : _) -> return c
+  where
+    navItem = item C.>=> C.attributeIs "properties" "nav"
+
+item :: C.Axis
+item = C.element "{http://www.idpf.org/2007/opf}item"
+
+-- Utilities
+
+-- | Extract something from an embedded JSON.
 decodeJsonText :: A.FromJSON a => Text -> Maybe a
 decodeJsonText = A.decodeStrict . T.encodeUtf8
