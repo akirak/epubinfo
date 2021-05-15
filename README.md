@@ -1,9 +1,17 @@
-# epub2json
+# epubinfo
 
-![CI](https://github.com/akirak/epub2json/workflows/CI/badge.svg)
+![CI](https://github.com/akirak/epubinfo/workflows/CI/badge.svg)
 [![Cachix Cache](https://img.shields.io/badge/cachix-akirak-blue.svg)](https://akirak.cachix.org)
 
-This is a small program which parses the metadata of a EPUB 3 file and prints part of it in JSON. It is intended for use in scripting in Bash, Emacs Lisp, or whatever. In bash, you can use `jq` to retrieve a particular field from the output.
+This is a small command line program which extract various information from an EPUB file. It is intended for use in scripting in Bash, Emacs Lisp, or whatever language you use.
+
+## Features
+
+It has the following commands:
+
+- `metadata`, which prints metadata of the file in JSON.
+
+At present, EPUB 3 is only officially supported.
 
 ## Installation
 
@@ -24,13 +32,13 @@ nix-env -if .
 You can also run it with a flake:
 
 ``` shell
-nix run --no-update-lock-file github:akirak/epub2json
+nix run --no-update-lock-file github:akirak/epubinfo
 ```
 
 ## Usage
 
-Run `epub2json` executable with an input file:
+### Printing the metadata in JSON
 
 ``` shell
-epub2json YourEbookFile.epub
+epubinfo metadata YourEbookFile.epub
 ```

@@ -4,15 +4,15 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 
-name:           epub2json
+name:           epubinfo
 version:        0.0.1.1
-synopsis:       Convert EPUB metadata to JSON
+synopsis:       Extract information from EPUB
 category:       codec program
-homepage:       https://github.com/akirak/epub2json
-bug-reports:    https://github.com/akirak/epub2json/issues
+homepage:       https://github.com/akirak/epubinfo
+bug-reports:    https://github.com/akirak/epubinfo/issues
 author:         Akira Komamura
 maintainer:     Akira Komamura
-copyright:      Copyright (c) 2020 Akira Komamura
+copyright:      Copyright (c) 2020-2021 Akira Komamura
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -21,15 +21,18 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/akirak/epub2json
+  location: https://github.com/akirak/epubinfo
 
-executable epub2json
+executable epubinfo
   main-is: Main.hs
   other-modules:
-      EPUB2JSON
-      EPUB2JSON.Parse
-      EPUB2JSON.Types
-      Paths_epub2json
+      EPUBInfo
+      EPUBInfo.Document
+      EPUBInfo.Document.Container
+      EPUBInfo.Document.Opf
+      EPUBInfo.Monad
+      EPUBInfo.Utils
+      Paths_epubinfo
   hs-source-dirs:
       src
   default-extensions: NoImplicitPrelude RecordWildCards OverloadedStrings PatternGuards
@@ -39,6 +42,7 @@ executable epub2json
     , base >=4.11 && <5
     , bytestring
     , containers
+    , exceptions
     , optparse-simple
     , protolude
     , text

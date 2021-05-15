@@ -1,20 +1,31 @@
-module Main where
+module Main (main) where
 
-import qualified Data.Aeson as A
-import qualified Data.ByteString.Lazy.Char8 as LBC8
 import Data.Version (showVersion)
-import EPUB2JSON
+import EPUBInfo
 import Options.Applicative.Simple
-import Paths_epub2json (version)
+import Paths_epubinfo (version)
 import Protolude
 
+fileArgument :: Parser FilePath
+fileArgument = strArgument (metavar "FILE")
+
+main :: IO ()
 main = do
-  (file, ()) <-
+  (_, runCmd) <-
     simpleOptions
-      ("epub2json " ++ showVersion version)
-      "epub2json"
-      "Convert EPUB metadata to JSON"
-      (strArgument (metavar "FILE"))
-      empty
-  metadata <- readEPUBFile file
-  LBC8.putStrLn $ A.encode metadata
+      ("epubinfo " ++ showVersion version)
+      "epubinfo"
+      "Extract metadata from EPUB"
+      (pure ())
+      $ do
+        addCommand
+          "metadata"
+          "Show metadata of a file"
+          printMetadata
+          fileArgument
+  runCmd
+
+-- | Print metadata in JSON
+printMetadata :: FilePath -> IO ()
+printMetadata file =
+  withEPUBFile file getMetadata >>= printJson
