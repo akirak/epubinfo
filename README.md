@@ -46,6 +46,21 @@ epubinfo metadata YourEbookFile.epub
 
 ### Printing the table of contents in plain text
 
+Print the table of contents in Markdown:
+
 ``` shell
-epubinfo toc YourEbookFile.epub
+epubinfo toc --markdown YourEbookFile.epub
+```
+
+Print the table of contents in Emacs Org mode:
+
+``` shell
+epubinfo toc --org YourEbookFile.epub
+```
+
+Both formats support `--checkbox` flag for adding checkboxes
+and `--depth` for specifying a maximum depth:
+
+``` shell
+epubinfo toc --org --depth=1 --checkbox YourEbookFile.epub
 ```
