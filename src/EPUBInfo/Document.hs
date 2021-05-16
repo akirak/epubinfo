@@ -4,8 +4,11 @@ module EPUBInfo.Document
     getMetadata,
     getTableOfContents,
     EPUBTocItemMissing,
+    getCoverImage,
+    EPUBNoCoverImage,
 
     -- * Re-exports
+    getArchiveContent,
     TableOfContents,
     ToTableOfContents (..),
     TocRenderOptions (..),
@@ -63,3 +66,24 @@ getTableOfContents = do
           ncxDocument <- readNcxDocument ncxPath
           toTableOfContents ncxDocument
         Nothing -> throwM EPUBTocItemMissing
+
+data EPUBNoCoverImage = EPUBNoCoverImage
+  deriving (Show, Typeable)
+
+instance Exception EPUBNoCoverImage
+
+-- | Return the media type and the file path of the cover image.
+--
+-- To get an actual content of the file, use @getArchiveContent@.
+--
+-- If the archive has no cover image, @EPUBNoCoverImage@ exception is
+-- thrown.
+getCoverImage :: EPUBM (Maybe Text, FilePath)
+getCoverImage = do
+  opfPath <- readContainer >>= getOpfPath
+  opfDoc <- readOpfDocument opfPath
+  mCover <- lookupCover opfDoc
+  case mCover of
+    Nothing -> throwM EPUBNoCoverImage
+    Just (mMime, relPath) ->
+      return (mMime, takeDirectory opfPath </> relPath)

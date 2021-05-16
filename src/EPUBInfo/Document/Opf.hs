@@ -14,6 +14,7 @@ module EPUBInfo.Document.Opf
     getMetadataFromOpf,
     getNavDocumentPathMaybe,
     getNcxPathMaybe,
+    lookupCover,
   )
 where
 
@@ -196,6 +197,23 @@ getNcxPathMaybe (OpfDocument root) =
       (item C.>=> C.attributeIs "media-type" "application/x-dtbncx+xml")
       "href"
 
+lookupCover :: MonadThrow m => OpfDocument -> m (Maybe (Maybe Text, FilePath))
+lookupCover doc@(OpfDocument root) = do
+  metadata <- getMetadataFromOpf doc
+  let meta' = meta metadata
+      mCoverName = M.lookup "cover" meta' >>= listToMaybe
+  case mCoverName of
+    Nothing -> return Nothing
+    Just coverId -> do
+      mItem <- lookupElementInManifest root (item >=> C.attributeIs "id" coverId)
+      case mItem of
+        Nothing -> throwM $ OpfElementNotFound "cover item"
+        Just c -> do
+          let mediaType = listToMaybe $ c C.$/ C.attribute "media-type"
+          case c C.$| C.attribute "href" of
+            [] -> throwM $ OpfAttributeNotFound "cover" "href"
+            (path : _) -> return $ Just (mediaType, unpack path)
+
 lookupItemAttributeInManifest ::
   MonadThrow m =>
   C.Cursor ->
@@ -203,16 +221,23 @@ lookupItemAttributeInManifest ::
   C.Axis ->
   X.Name ->
   m (Maybe Text)
-lookupItemAttributeInManifest root description axis attrName =
+lookupItemAttributeInManifest root description axis attrName = do
+  mCursor <- lookupElementInManifest root axis
+  case mCursor of
+    Nothing -> return Nothing
+    Just c ->
+      case C.attribute attrName c of
+        [] -> throwM $ OpfAttributeNotFound description attrName
+        (value : _) -> return $ Just value
+
+lookupElementInManifest :: MonadThrow m => C.Cursor -> C.Axis -> m (Maybe C.Cursor)
+lookupElementInManifest root axis =
   case opfManifest root of
     [] -> throwM $ OpfElementNotFound "manifest"
     (manifestCursor : _) ->
       case manifestCursor C.$/ axis of
         [] -> return Nothing
-        (c : _) ->
-          case C.attribute attrName c of
-            [] -> throwM $ OpfAttributeNotFound description attrName
-            (value : _) -> return $ Just value
+        (c : _) -> return $ Just c
 
 opfManifest :: C.Cursor -> [C.Cursor]
 opfManifest =

@@ -44,3 +44,6 @@ executables:
       - xml-conduit
       - containers
       - optparse-simple
+      - bytestring
+      - directory
+      - filepath
