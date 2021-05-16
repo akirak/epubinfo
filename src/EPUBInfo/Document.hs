@@ -6,6 +6,11 @@ module EPUBInfo.Document
     EPUBTocItemMissing,
 
     -- * Re-exports
+    TableOfContents,
+    ToTableOfContents (..),
+    TocRenderOptions (..),
+    tocToOrg,
+    tocToMarkdown,
     module EPUBInfo.Document.Opf,
     module EPUBInfo.Document.Container,
     module EPUBInfo.Document.Nav,
@@ -17,6 +22,7 @@ import EPUBInfo.Document.Container
 import EPUBInfo.Document.Nav
 import EPUBInfo.Document.Opf
 import EPUBInfo.Monad
+import EPUBInfo.Toc
 import Protolude
 import System.FilePath (takeDirectory, (</>))
 import Prelude (Show (..))

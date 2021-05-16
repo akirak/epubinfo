@@ -32,6 +32,7 @@ executable epubinfo
       EPUBInfo.Document.Nav
       EPUBInfo.Document.Opf
       EPUBInfo.Monad
+      EPUBInfo.Toc
       EPUBInfo.Utils
       Paths_epubinfo
   hs-source-dirs:
