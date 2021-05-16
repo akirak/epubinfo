@@ -5,21 +5,12 @@ module EPUBInfo.Document.Nav
   ( -- * Nav document
     NavDocument,
     readNavDocument,
-
-    -- * Table of contents
-    TableOfContents,
-    toTableOfContents,
-
-    -- * Formatting
-    TocRenderOptions (..),
-    tocToOrg,
-    tocToMarkdown,
   )
 where
 
 import Control.Monad.Catch (MonadThrow (..))
-import qualified Data.Text as T
 import EPUBInfo.Monad
+import EPUBInfo.Toc
 import Protolude
 import qualified Text.XML.Cursor as C
 import Prelude (Show (..), String)
@@ -29,21 +20,6 @@ newtype NavDocument = NavDocument C.Cursor
 
 readNavDocument :: FilePath -> EPUBM NavDocument
 readNavDocument path = NavDocument . C.fromDocument <$> readXmlInArchive path
-
-newtype TableOfContents = TableOfContents [TocNode]
-  deriving (Show)
-
-data TocNode = TocNode
-  { tocNodeEntry :: TocEntry,
-    tocNodeChildren :: [TocNode]
-  }
-  deriving (Show)
-
-data TocEntry = TocEntry
-  { tocEntryTitle :: Text,
-    tocEntryHref :: Text
-  }
-  deriving (Show)
 
 data NavException
   = NavMissing
@@ -60,19 +36,20 @@ instance Show NavException where
 
 instance Exception NavException
 
-toTableOfContents :: MonadThrow m => NavDocument -> m TableOfContents
-toTableOfContents (NavDocument root) =
-  case root C.$// navElement of
-    [] -> throwM NavMissing
-    (c : _) ->
-      case c C.$/ C.anyElement of
-        [] -> throwM NavEmpty
-        [ol] -> TableOfContents <$> xmlToTocNodes ol
-        _ -> throwM $ NavOther "The nav element contains multiple children"
-  where
-    navElement =
-      C.element "{http://www.w3.org/1999/xhtml}nav"
-        C.>=> C.attributeIs "{http://www.idpf.org/2007/ops}type" "toc"
+instance ToTableOfContents NavDocument where
+  toTableOfContents (NavDocument root) =
+    case root C.$// navElement of
+      [] -> throwM NavMissing
+      (c : _) ->
+        case c C.$/ C.anyElement of
+          [] -> throwM NavEmpty
+          [ol] -> TableOfContents <$> xmlToTocNodes ol
+          _ -> throwM $ NavOther "The nav element contains multiple children"
+
+navElement :: C.Axis
+navElement =
+  C.element "{http://www.w3.org/1999/xhtml}nav"
+    C.>=> C.attributeIs "{http://www.idpf.org/2007/ops}type" "toc"
 
 xmlToTocNodes :: MonadThrow m => C.Cursor -> m [TocNode]
 xmlToTocNodes = goList
@@ -105,30 +82,3 @@ xmlToTocNodes = goList
           { tocEntryTitle = content,
             tocEntryHref = href
           }
-
-data TocRenderOptions = TocRenderOptions
-  { tocCheckbox :: Bool,
-    tocMaxDepth :: Maybe Int
-  }
-  deriving (Show)
-
-tocToOrg :: TocRenderOptions -> TableOfContents -> Text
-tocToOrg opts (TableOfContents nodes) = tocToPlainText "-" 2 opts nodes
-
-tocToMarkdown :: TocRenderOptions -> TableOfContents -> Text
-tocToMarkdown opts (TableOfContents nodes) = tocToPlainText "-" 2 opts nodes
-
-tocToPlainText :: Text -> Int -> TocRenderOptions -> [TocNode] -> Text
-tocToPlainText bullet indentOffset opts = T.intercalate "\n" . map (go 0)
-  where
-    go level (TocNode entry children) =
-      T.concat $
-        [ T.replicate (indentOffset * level) (T.singleton ' '),
-          bullet,
-          if tocCheckbox opts then " [ ]" else T.empty,
-          T.singleton ' ',
-          tocEntryTitle entry
-        ]
-          ++ case tocMaxDepth opts of
-            Just maxDepth | maxDepth == level + 1 -> []
-            _ -> map (T.cons '\n' . go (level + 1)) children
