@@ -12,7 +12,7 @@ module EPUBInfo.Document.Opf
     OpfDocument,
     readOpfDocument,
     getMetadataFromOpf,
-    getNavDocumentPath,
+    getNavDocumentPathMaybe,
   )
 where
 
@@ -85,7 +85,7 @@ instance Exception OpfElementNotFound
 
 data OpfAttributeNotFound = OpfAttributeNotFound
   { opfAttributeNotFoundContext :: String,
-    opfAttributeNotFoundAttribute :: String
+    opfAttributeNotFoundAttribute :: X.Name
   }
   deriving (Show, Typeable)
 
@@ -174,28 +174,37 @@ metaFromNode _ = error "metaFromNode: Expecting an element"
 -- | Return href attribute of the nav item.
 --
 -- Note that the result will be a relative path from the opf document.
-getNavDocumentPath :: MonadThrow m => OpfDocument -> m FilePath
-getNavDocumentPath (OpfDocument cursor) =
-  case opfManifest cursor of
+getNavDocumentPathMaybe :: MonadThrow m => OpfDocument -> m (Maybe FilePath)
+getNavDocumentPathMaybe (OpfDocument root) =
+  fmap unpack
+    <$> lookupItemAttributeInManifest
+      root
+      "item[properties=nav]"
+      (item C.>=> C.attributeIs "properties" "nav")
+      "href"
+
+lookupItemAttributeInManifest ::
+  MonadThrow m =>
+  C.Cursor ->
+  String ->
+  C.Axis ->
+  X.Name ->
+  m (Maybe Text)
+lookupItemAttributeInManifest root description axis attrName =
+  case opfManifest root of
     [] -> throwM $ OpfElementNotFound "manifest"
-    (c : _) -> do
-      elementC <- findNavItem c
-      case C.attribute "href" elementC of
-        [] -> throwM $ OpfAttributeNotFound "item[properties=nav]" "href"
-        (value : _) -> return $ unpack value
+    (manifestCursor : _) ->
+      case manifestCursor C.$/ axis of
+        [] -> return Nothing
+        (c : _) ->
+          case C.attribute attrName c of
+            [] -> throwM $ OpfAttributeNotFound description attrName
+            (value : _) -> return $ Just value
 
 opfManifest :: C.Cursor -> [C.Cursor]
 opfManifest =
   C.element "{http://www.idpf.org/2007/opf}package"
     C.&/ C.element "{http://www.idpf.org/2007/opf}manifest"
-
-findNavItem :: MonadThrow m => C.Cursor -> m C.Cursor
-findNavItem manifestCursor =
-  case manifestCursor C.$/ navItem of
-    [] -> throwM $ OpfElementNotFound "item[properties=nav]"
-    (c : _) -> return c
-  where
-    navItem = item C.>=> C.attributeIs "properties" "nav"
 
 item :: C.Axis
 item = C.element "{http://www.idpf.org/2007/opf}item"
