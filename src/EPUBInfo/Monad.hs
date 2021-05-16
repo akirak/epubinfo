@@ -12,6 +12,7 @@ module EPUBInfo.Monad
 
     -- * Functions
     readXmlInArchive,
+    getArchiveContent,
   )
 where
 
@@ -84,3 +85,11 @@ checkBom lbs =
   if LB.isPrefixOf (LB.pack "\xef\xbb\xbf") lbs
     then LB.drop 3 lbs
     else lbs
+
+-- | Get the binary content of a file
+getArchiveContent :: FilePath -> EPUBM LByteString
+getArchiveContent pathFromArchiveRoot = EPUBM $ do
+  archive <- lift ask
+  case Z.findEntryByPath pathFromArchiveRoot archive of
+    Nothing -> throwM $ EPUBFileNotFoundError pathFromArchiveRoot
+    Just entry -> return $ Z.fromEntry entry
