@@ -13,6 +13,7 @@ module EPUBInfo.Document.Opf
     readOpfDocument,
     getMetadataFromOpf,
     getNavDocumentPathMaybe,
+    getNcxPathMaybe,
   )
 where
 
@@ -181,6 +182,18 @@ getNavDocumentPathMaybe (OpfDocument root) =
       root
       "item[properties=nav]"
       (item C.>=> C.attributeIs "properties" "nav")
+      "href"
+
+-- | Return href attribute of ncx.
+--
+-- Note that the result will be a relative path from the opf document.
+getNcxPathMaybe :: MonadThrow m => OpfDocument -> m (Maybe FilePath)
+getNcxPathMaybe (OpfDocument root) =
+  fmap unpack
+    <$> lookupItemAttributeInManifest
+      root
+      "item[media-type=application/x-dtbncx+xml]"
+      (item C.>=> C.attributeIs "media-type" "application/x-dtbncx+xml")
       "href"
 
 lookupItemAttributeInManifest ::

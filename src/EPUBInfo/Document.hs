@@ -20,6 +20,7 @@ where
 import Control.Monad.Catch (MonadThrow (..))
 import EPUBInfo.Document.Container
 import EPUBInfo.Document.Nav
+import EPUBInfo.Document.Ncx
 import EPUBInfo.Document.Opf
 import EPUBInfo.Monad
 import EPUBInfo.Toc
@@ -54,5 +55,11 @@ getTableOfContents = do
       let navPath = takeDirectory opfPath </> navRelPath
       navDocument <- readNavDocument navPath
       toTableOfContents navDocument
-    Nothing ->
-      throwM EPUBTocItemMissing
+    Nothing -> do
+      mNcxRelPath <- getNcxPathMaybe opfDoc
+      case mNcxRelPath of
+        Just ncxRelPath -> do
+          let ncxPath = takeDirectory opfPath </> ncxRelPath
+          ncxDocument <- readNcxDocument ncxPath
+          toTableOfContents ncxDocument
+        Nothing -> throwM EPUBTocItemMissing

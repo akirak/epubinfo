@@ -8,12 +8,12 @@ module EPUBInfo.Document.Nav
   )
 where
 
-import EPUBInfo.Toc
 import Control.Monad.Catch (MonadThrow (..))
 import EPUBInfo.Monad
+import EPUBInfo.Toc
 import Protolude
 import qualified Text.XML.Cursor as C
-import Prelude (Show(..), String)
+import Prelude (Show (..), String)
 
 newtype NavDocument = NavDocument C.Cursor
   deriving (Show)
@@ -46,9 +46,10 @@ instance ToTableOfContents NavDocument where
           [ol] -> TableOfContents <$> xmlToTocNodes ol
           _ -> throwM $ NavOther "The nav element contains multiple children"
 
+navElement :: C.Axis
 navElement =
   C.element "{http://www.w3.org/1999/xhtml}nav"
-  C.>=> C.attributeIs "{http://www.idpf.org/2007/ops}type" "toc"
+    C.>=> C.attributeIs "{http://www.idpf.org/2007/ops}type" "toc"
 
 xmlToTocNodes :: MonadThrow m => C.Cursor -> m [TocNode]
 xmlToTocNodes = goList
