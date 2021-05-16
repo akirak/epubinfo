@@ -142,6 +142,6 @@ epubinfo cover [-o FILE] [-f] YourEbookFile.epub
 ```
 
 You can specify an output file name with `-o`/`--out-file`.
-By default, it creates an image file which has the same base name as the EPUB file, e.g. `YourEbookFile.jpg`, in the same directory.
+By default, it creates an image file which has the same base name as the EPUB file, e.g. `YourEbookFile.jpg`, in the same directory. The output file name will be printed to the standard output, which you can use for scripting.
 
 With `-f`/`--force` option, the output file will be overwritten.
