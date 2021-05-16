@@ -11,6 +11,7 @@ It has the following commands:
 
 - `metadata`, which prints metadata of the file in JSON.
 - `toc`, which prints the table of contents in Org or Markdown.
+- `cover`, which saves a cover image of the book to a file outside of the archive.
 
 At present, EPUB 3 is only officially supported.
 
@@ -131,3 +132,16 @@ An example output:
 - [ ] Using Argo Rollouts To Deploy Applications
 - [ ] This Is NOT The End
 ```
+
+### Extract a cover image
+
+To save the cover image to a file, run:
+
+```
+epubinfo cover [-o FILE] [-f] YourEbookFile.epub
+```
+
+You can specify an output file name with `-o`/`--out-file`.
+By default, it creates an image file which has the same base name as the EPUB file, e.g. `YourEbookFile.jpg`, in the same directory.
+
+With `-f`/`--force` option, the output file will be overwritten.
