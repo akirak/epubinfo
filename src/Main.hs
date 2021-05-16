@@ -120,7 +120,7 @@ saveCoverImage CoverArguments {..} = do
           Nothing
           (Just outputFile)
   LB.writeFile outputFile lbs
-  hPutStrLn stderr $ "Saved the cover image to " ++ outputFile
+  putStrLn outputFile
 
 main :: IO ()
 main = do
