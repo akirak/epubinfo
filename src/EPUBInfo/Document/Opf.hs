@@ -43,6 +43,8 @@ data EPUBMetadata = EPUBMetadata
     identifierMap :: Map Text Text,
     -- | The value of a first dc:title entry
     title :: Maybe Text,
+    -- | The value of a first dc:description entry
+    description :: Maybe Text,
     -- | The value of a first dc:language entry
     language :: Maybe Text,
     -- | The value of a first dc:creator entry
@@ -106,6 +108,7 @@ getMetadataFromOpf (OpfDocument rootCursor) =
               [] -> throwM $ OpfElementNotFound ('#' : unpack elementId)
               (c : _) -> return $ listToMaybe $ c C.$/ C.content
       let titleList' = metadataC C.$/ titleList
+          descriptionList' = metadataC C.$/ descriptionList
           creatorList' = metadataC C.$/ creatorList
           contributorList' = metadataC C.$/ contributorList
           languageList' = metadataC C.$/ languageList
@@ -131,6 +134,7 @@ getMetadataFromOpf (OpfDocument rootCursor) =
                   map dcIdentifierEntry $
                     metadataC C.$/ dcIdentifierElement,
             title = listToMaybe titleList',
+            description = listToMaybe descriptionList',
             language = listToMaybe languageList',
             creator = listToMaybe creatorList',
             contributors = contributorList',
@@ -153,6 +157,9 @@ getMetadataFromOpf (OpfDocument rootCursor) =
       return (scheme, value)
     titleList =
       C.element "{http://purl.org/dc/elements/1.1/}title"
+        C.&/ C.content
+    descriptionList =
+      C.element "{http://purl.org/dc/elements/1.1/}description"
         C.&/ C.content
     languageList =
       C.element "{http://purl.org/dc/elements/1.1/}language"
