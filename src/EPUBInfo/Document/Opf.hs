@@ -22,6 +22,7 @@ import Control.Monad.Catch
 import Data.Aeson (ToJSON (..))
 import qualified Data.Aeson as A
 import qualified Data.Map as M
+import qualified Data.Set as S
 import Data.Text (unpack)
 import qualified Data.Text.Encoding as T
 import EPUBInfo.Monad
@@ -42,6 +43,8 @@ data EPUBMetadata = EPUBMetadata
     identifierMap :: Map Text Text,
     -- | The value of a first dc:title entry
     title :: Maybe Text,
+    -- | The value of a first dc:description entry
+    description :: Maybe Text,
     -- | The value of a first dc:language entry
     language :: Maybe Text,
     -- | The value of a first dc:creator entry
@@ -51,7 +54,7 @@ data EPUBMetadata = EPUBMetadata
     -- | The value of a first dc:date entry
     date :: Maybe Text,
     -- | The values of dc:subject entries
-    subjects :: [Text],
+    subjects :: S.Set Text,
     -- | The value of a first dc:publisher entry
     publisher :: Maybe Text,
     -- | meta elements by name/property
@@ -105,6 +108,7 @@ getMetadataFromOpf (OpfDocument rootCursor) =
               [] -> throwM $ OpfElementNotFound ('#' : unpack elementId)
               (c : _) -> return $ listToMaybe $ c C.$/ C.content
       let titleList' = metadataC C.$/ titleList
+          descriptionList' = metadataC C.$/ descriptionList
           creatorList' = metadataC C.$/ creatorList
           contributorList' = metadataC C.$/ contributorList
           languageList' = metadataC C.$/ languageList
@@ -130,12 +134,13 @@ getMetadataFromOpf (OpfDocument rootCursor) =
                   map dcIdentifierEntry $
                     metadataC C.$/ dcIdentifierElement,
             title = listToMaybe titleList',
+            description = listToMaybe descriptionList',
             language = listToMaybe languageList',
             creator = listToMaybe creatorList',
             contributors = contributorList',
             publisher = listToMaybe publisherList',
             date = listToMaybe dateList',
-            subjects = subjectList',
+            subjects = S.fromList subjectList',
             meta = meta',
             calibreUserCategories = calibreUserCategories',
             coverMediaType = join $ fst <$> mCover,
@@ -152,6 +157,9 @@ getMetadataFromOpf (OpfDocument rootCursor) =
       return (scheme, value)
     titleList =
       C.element "{http://purl.org/dc/elements/1.1/}title"
+        C.&/ C.content
+    descriptionList =
+      C.element "{http://purl.org/dc/elements/1.1/}description"
         C.&/ C.content
     languageList =
       C.element "{http://purl.org/dc/elements/1.1/}language"
