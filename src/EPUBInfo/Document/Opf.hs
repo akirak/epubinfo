@@ -22,6 +22,7 @@ import Control.Monad.Catch
 import Data.Aeson (ToJSON (..))
 import qualified Data.Aeson as A
 import qualified Data.Map as M
+import qualified Data.Set as S
 import Data.Text (unpack)
 import qualified Data.Text.Encoding as T
 import EPUBInfo.Monad
@@ -51,7 +52,7 @@ data EPUBMetadata = EPUBMetadata
     -- | The value of a first dc:date entry
     date :: Maybe Text,
     -- | The values of dc:subject entries
-    subjects :: [Text],
+    subjects :: S.Set Text,
     -- | The value of a first dc:publisher entry
     publisher :: Maybe Text,
     -- | meta elements by name/property
@@ -135,7 +136,7 @@ getMetadataFromOpf (OpfDocument rootCursor) =
             contributors = contributorList',
             publisher = listToMaybe publisherList',
             date = listToMaybe dateList',
-            subjects = subjectList',
+            subjects = S.fromList subjectList',
             meta = meta',
             calibreUserCategories = calibreUserCategories',
             coverMediaType = join $ fst <$> mCover,
