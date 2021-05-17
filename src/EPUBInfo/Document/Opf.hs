@@ -21,7 +21,6 @@ where
 import Control.Monad.Catch
 import Data.Aeson (ToJSON (..))
 import qualified Data.Aeson as A
-import qualified Data.Char as Char
 import qualified Data.Map as M
 import Data.Text (unpack)
 import qualified Data.Text.Encoding as T
@@ -29,49 +28,43 @@ import EPUBInfo.Monad
 import Protolude
 import qualified Text.XML as X
 import qualified Text.XML.Cursor as C
-import Prelude (String, error)
+import Prelude (String)
+
+-- | The scheme version of this library.
+schemeVersion :: Text
+schemeVersion = "0.2"
 
 data EPUBMetadata = EPUBMetadata
-  { identifier :: [Text],
-    title :: [Text],
-    language :: [Text],
-    -- TODO: DCMES optional
-    contributor :: [Text],
-    creator :: [Text],
+  { jsonVersion :: Text,
+    -- | The value of a dc:identifier entry marked as the unique-identifier
+    uniqueIdentifier :: Maybe Text,
+    -- | Key-value pairs of dc:identifier entries by opf:scheme key
+    identifierMap :: Map Text Text,
+    -- | The value of a first dc:title entry
+    title :: Maybe Text,
+    -- | The value of a first dc:language entry
+    language :: Maybe Text,
+    -- | The value of a first dc:creator entry
+    creator :: Maybe Text,
+    -- | The values of dc:contributor entries
+    contributors :: [Text],
+    -- | The value of a first dc:date entry
     date :: Maybe Text,
-    subject :: [Text],
+    -- | The values of dc:subject entries
+    subjects :: [Text],
+    -- | The value of a first dc:publisher entry
     publisher :: Maybe Text,
-    -- type
-    -- , dcAttributes :: Map Text Text
-    meta :: Map Text [Text],
-    -- TODO: Parse links
-    -- , links :: Map Text LinkTarget
-    -- TODO: Parse the JSON object of calibre:user_categories
-    calibreUserCategories :: Maybe (Map Text [Text])
+    -- | meta elements by name/property
+    meta :: Map Text Text,
+    -- | JSON serialization of calibre:user_categories meta element
+    calibreUserCategories :: Maybe (Map Text [Text]),
+    -- | Media type of the cover image, if any
+    coverMediaType :: Maybe Text,
+    coverFileName :: Maybe FilePath
   }
   deriving (Generic)
 
-data LinkTarget = LinkTarget
-  { linkMediaType :: Maybe Text,
-    linkRefines :: Maybe Text,
-    linkProperties :: [Text],
-    linkHref :: Text
-  }
-  deriving (Generic)
-
-instance ToJSON LinkTarget where
-  toEncoding =
-    A.genericToEncoding $
-      A.defaultOptions
-        { A.fieldLabelModifier = map Char.toLower . drop 4
-        }
-
-instance ToJSON EPUBMetadata where
-  toEncoding =
-    A.genericToEncoding $
-      A.defaultOptions
-        { A.omitNothingFields = True
-        }
+instance ToJSON EPUBMetadata
 
 newtype OpfDocument = OpfDocument C.Cursor
   deriving (Show)
@@ -94,38 +87,69 @@ data OpfAttributeNotFound = OpfAttributeNotFound
 instance Exception OpfAttributeNotFound
 
 getMetadataFromOpf :: MonadThrow m => OpfDocument -> m EPUBMetadata
-getMetadataFromOpf (OpfDocument cursor) =
-  case opfMetadata cursor of
+getMetadataFromOpf (OpfDocument rootCursor) =
+  case (opfPackage C.&/ opfMetadata) rootCursor of
     [] -> throwM $ OpfElementNotFound "metadata"
-    (c : _) -> return $ toEPUBMetadata c
-
-opfMetadata :: C.Cursor -> [C.Cursor]
-opfMetadata =
-  C.element "{http://www.idpf.org/2007/opf}package"
-    C.&/ C.element "{http://www.idpf.org/2007/opf}metadata"
-
-toEPUBMetadata :: C.Cursor -> EPUBMetadata
-toEPUBMetadata c =
-  EPUBMetadata
-    { identifier = c C.$/ identifierList,
-      title = c C.$/ titleList,
-      language = c C.$/ languageList,
-      creator = c C.$/ creatorList,
-      contributor = c C.$/ contributorList,
-      publisher = listToMaybe $ c C.$/ maybePublisher,
-      date = listToMaybe $ c C.$/ maybeDate,
-      subject = c C.$/ subjectList,
-      meta = meta,
-      calibreUserCategories =
-        case M.lookup "calibre:user_categories" meta of
-          Just [t] -> decodeJsonText t
-          _ -> mempty
-    }
+    (metadataC : _) -> do
+      let uniqueIdentifierId' =
+            listToMaybe $
+              rootCursor C.$| C.attribute "unique-identifier"
+      uniqueIdentifier' <-
+        case uniqueIdentifierId' of
+          Nothing -> return Nothing
+          Just elementId ->
+            case metadataC
+              C.$/ ( dcIdentifierElement
+                       >=> C.attributeIs "id" elementId
+                   ) of
+              [] -> throwM $ OpfElementNotFound ('#' : unpack elementId)
+              (c : _) -> return $ listToMaybe $ c C.$/ C.content
+      let titleList' = metadataC C.$/ titleList
+          creatorList' = metadataC C.$/ creatorList
+          contributorList' = metadataC C.$/ contributorList
+          languageList' = metadataC C.$/ languageList
+          subjectList' = metadataC C.$/ subjectList
+          dateList' = metadataC C.$/ dateList
+          publisherList' = metadataC C.$/ publisherList
+          meta' = M.fromList $ catMaybes $ metadataC C.$/ metaAlist
+          calibreUserCategories' =
+            case M.lookup "calibre:user_categories" meta' of
+              Just t -> decodeJsonText t
+              _ -> mempty
+      mCover <-
+        case M.lookup "cover" meta' of
+          Nothing -> return Nothing
+          Just coverId -> Just <$> lookupCoverById coverId rootCursor
+      return
+        EPUBMetadata
+          { jsonVersion = schemeVersion,
+            uniqueIdentifier = uniqueIdentifier',
+            identifierMap =
+              M.fromList $
+                catMaybes $
+                  map dcIdentifierEntry $
+                    metadataC C.$/ dcIdentifierElement,
+            title = listToMaybe titleList',
+            language = listToMaybe languageList',
+            creator = listToMaybe creatorList',
+            contributors = contributorList',
+            publisher = listToMaybe publisherList',
+            date = listToMaybe dateList',
+            subjects = subjectList',
+            meta = meta',
+            calibreUserCategories = calibreUserCategories',
+            coverMediaType = join $ fst <$> mCover,
+            coverFileName = snd <$> mCover
+          }
   where
-    meta = M.fromList $ groupByKey $ catMaybes $ c C.$/ metaAlist
-    identifierList =
-      C.element "{http://purl.org/dc/elements/1.1/}identifier"
-        C.&/ C.content
+    opfPackage = C.element "{http://www.idpf.org/2007/opf}package"
+    opfMetadata = C.element "{http://www.idpf.org/2007/opf}metadata"
+    opfSchemeAttribute = "{http://www.idpf.org/2007/opf}scheme"
+    dcIdentifierElement = C.element "{http://purl.org/dc/elements/1.1/}identifier"
+    dcIdentifierEntry c = listToMaybe $ do
+      scheme <- c C.$| C.attribute opfSchemeAttribute
+      value <- c C.$/ C.content
+      return (scheme, value)
     titleList =
       C.element "{http://purl.org/dc/elements/1.1/}title"
         C.&/ C.content
@@ -141,37 +165,29 @@ toEPUBMetadata c =
     subjectList =
       C.element "{http://purl.org/dc/elements/1.1/}subject"
         C.&/ C.content
-    maybeDate =
+    dateList =
       C.element "{http://purl.org/dc/elements/1.1/}date"
         C.&/ C.content
-    maybePublisher =
+    publisherList =
       C.element "{http://purl.org/dc/elements/1.1/}publisher"
         C.&/ C.content
     metaAlist =
       C.element "{http://www.idpf.org/2007/opf}meta"
-        C.&| metaFromNode . C.node
+        C.&| metaEntry
 
-groupByKey :: (Eq a, Ord a) => [(a, b)] -> [(a, [b])]
-groupByKey =
-  map (\xs@(x : _) -> (fst x, map snd xs))
-    . groupBy ((==) `on` fst)
-    . sortBy (compare `on` fst)
-
-metaFromNode :: X.Node -> Maybe (Text, Text)
-metaFromNode (X.NodeElement e)
-  -- Calibre
-  | attrs <- X.elementAttributes e,
-    Just name <- M.lookup "name" attrs,
-    Just content <- M.lookup "content" (X.elementAttributes e) =
-    Just (name, content)
-  -- EPUB 3
-  | attrs <- X.elementAttributes e,
-    Just property <- M.lookup "property" attrs,
-    (X.NodeContent content : _) <- X.elementNodes e =
-    Just (property, content)
-  | otherwise = Nothing
--- TODO: Properly throw an exception
-metaFromNode _ = error "metaFromNode: Expecting an element"
+metaEntry :: C.Cursor -> Maybe (Text, Text)
+metaEntry c =
+  listToMaybe $
+    msum
+      [ do
+          key <- c C.$| C.attribute "name"
+          value <- c C.$| C.attribute "content"
+          return (key, value),
+        do
+          key <- c C.$| C.attribute "property"
+          value <- c C.$/ C.content
+          return (key, value)
+      ]
 
 -- | Return href attribute of the nav item.
 --
@@ -198,21 +214,23 @@ getNcxPathMaybe (OpfDocument root) =
       "href"
 
 lookupCover :: MonadThrow m => OpfDocument -> m (Maybe (Maybe Text, FilePath))
-lookupCover doc@(OpfDocument root) = do
+lookupCover doc = do
   metadata <- getMetadataFromOpf doc
-  let meta' = meta metadata
-      mCoverName = M.lookup "cover" meta' >>= listToMaybe
-  case mCoverName of
+  case coverFileName metadata of
     Nothing -> return Nothing
-    Just coverId -> do
-      mItem <- lookupElementInManifest root (item >=> C.attributeIs "id" coverId)
-      case mItem of
-        Nothing -> throwM $ OpfElementNotFound "cover item"
-        Just c -> do
-          let mediaType = listToMaybe $ c C.$/ C.attribute "media-type"
-          case c C.$| C.attribute "href" of
-            [] -> throwM $ OpfAttributeNotFound "cover" "href"
-            (path : _) -> return $ Just (mediaType, unpack path)
+    Just filepath ->
+      return $ Just (coverMediaType metadata, filepath)
+
+lookupCoverById :: MonadThrow m => Text -> C.Cursor -> m (Maybe Text, FilePath)
+lookupCoverById coverId root = do
+  mItem <- lookupElementInManifest root (item >=> C.attributeIs "id" coverId)
+  case mItem of
+    Nothing -> throwM $ OpfElementNotFound "cover item"
+    Just c -> do
+      let mediaType = listToMaybe $ c C.$| C.attribute "media-type"
+      case c C.$| C.attribute "href" of
+        [] -> throwM $ OpfAttributeNotFound "cover" "href"
+        (path : _) -> return (mediaType, unpack path)
 
 lookupItemAttributeInManifest ::
   MonadThrow m =>
