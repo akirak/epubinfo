@@ -72,6 +72,8 @@ An example output formatted with `jq`:
 }
 ```
 
+The command also supports printing the latest metadata fetched using `fetch-ebook-metadata` command from Calibre. You have to install Calibre to use the feature. To turn on the feature, add `--fetch-metadata`/`-F` to the command line.
+
 ### Printing the table of contents in plain text
 
 Print the table of contents in Markdown:
