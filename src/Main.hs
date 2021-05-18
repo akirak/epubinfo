@@ -19,6 +19,23 @@ import System.IO.Error
 fileArgument :: Parser FilePath
 fileArgument = strArgument (metavar "FILE")
 
+data MetadataArguments = MetadataArguments
+  { metadataFetch :: Bool,
+    metadataInputEpub :: FilePath
+  }
+  deriving (Show)
+
+pMetadataArguments
+  MetadataArguments
+  <$> flag
+    False
+    True
+    ( long "fetch-metadata"
+        <> short 'F'
+        <> help "Fetch metadata using fetch-ebook-metadata command "
+    )
+  <*> fileArgument
+
 data TocFormat = TocMarkdown | TocOrg
   deriving (Show)
 
@@ -135,7 +152,7 @@ main = do
           "metadata"
           "Show metadata of a file"
           printMetadata
-          fileArgument
+          pMetadataArguments
         addCommand
           "toc"
           "Print the table of contents"
@@ -150,9 +167,15 @@ main = do
   runCmd
 
 -- | Print metadata in JSON
-printMetadata :: FilePath -> IO ()
-printMetadata file =
-  withEPUBFile file getMetadata >>= printJson
+printMetadata :: MetadataArguments -> IO ()
+printMetadata MetadataArguments {..} = do
+  metadata <- withEPUBFile metadataInputEpub getMetadata
+  let printer = printJson
+  metadata' <-
+    if metadataFetch
+      then mergeOnlineMetadata metadata
+      else return metadata
+  printJson metadata'
 
 -- | Print the table of contents
 printTableOfContents :: TocArguments -> IO ()

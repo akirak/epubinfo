@@ -32,6 +32,7 @@ executable epubinfo
       EPUBInfo.Document.Nav
       EPUBInfo.Document.Ncx
       EPUBInfo.Document.Opf
+      EPUBInfo.FetchMetadata
       EPUBInfo.Monad
       EPUBInfo.Toc
       EPUBInfo.Utils
