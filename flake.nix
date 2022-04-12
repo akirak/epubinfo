@@ -27,9 +27,6 @@
         apps.epubinfo = flake-utils.lib.mkApp {
           drv = packages.epubinfo;
         };
-        overlay = _: _: {
-          inherit (packages) epubinfo;
-        };
         defaultApp = apps.epubinfo;
         lib.haskellPackages = myHaskellPackages;
         lib.epubinfo = lib.haskellPackages.epubinfo;
