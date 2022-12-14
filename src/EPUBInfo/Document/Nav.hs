@@ -44,6 +44,7 @@ instance ToTableOfContents NavDocument where
         case c C.$/ C.anyElement of
           [] -> throwM NavEmpty
           [ol] -> TableOfContents <$> xmlToTocNodes ol
+          [_h,ol] -> TableOfContents <$> xmlToTocNodes ol
           _ -> throwM $ NavOther "The nav element contains multiple children"
 
 navElement :: C.Axis
