@@ -6,6 +6,10 @@ on:
   push:
     branches:
     - master
+    paths:
+    - flake.nix
+    - flake.lock
+    - '**/*.hs'
 jobs:
   build:
     runs-on: ubuntu-latest
