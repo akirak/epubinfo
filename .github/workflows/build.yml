@@ -26,4 +26,3 @@ jobs:
     - name: Print the GHC version
       run: nix develop -c ghc --version
     - run: nix build
-    - run: nix flake check
