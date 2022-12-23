@@ -21,17 +21,8 @@ jobs:
           access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
           flake-registry = https://raw.githubusercontent.com/akirak/flake-pins/master/registry.json
 
-    - run: nix flake update
-
-    - uses: peter-evans/create-pull-request@v4
+    - uses: DeterminateSystems/update-flake-lock@v15
       with:
-        commit-message: 'Update flake inputs'
-        base: master
-        title: 'build: Update dependencies'
-        branch: create-pull-request/update
-        labels: automation,update
-
-  build:
-    needs: ['update']
-    if: ${{ needs.update.outputs.pr == 'created' || needs.update.outputs.pr == 'updated' }}
-    uses: ./.github/workflows/build.yml
+        pr-title: "Update flake.lock"
+        pr-labels: |
+          automation
