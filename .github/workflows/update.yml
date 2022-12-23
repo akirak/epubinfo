@@ -1,0 +1,37 @@
+name: Update the flake inputs
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types:
+    - flake-update
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    outputs:
+      pr: ${{ steps.pr.outputs.pull-request-operation }}
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: cachix/install-nix-action@v18
+      with:
+        extra_nix_config: |
+          access-tokens = github.com=${{ secrets.GITHUB_TOKEN }}
+          flake-registry = https://raw.githubusercontent.com/akirak/flake-pins/master/registry.json
+
+    - run: nix flake update
+
+    - uses: peter-evans/create-pull-request@v4
+      with:
+        commit-message: 'Update flake inputs'
+        base: master
+        title: 'build: Update dependencies'
+        branch: create-pull-request/update
+        labels: automation,update
+
+  build:
+    needs: ['update']
+    if: ${{ needs.update.outputs.pr == 'created' || needs.update.outputs.pr == 'updated' }}
+    uses: ./.github/workflows/build.yml
