@@ -2,10 +2,8 @@
   description = "Extract metadata from an EPUB file";
 
   inputs.flake-utils.url = "github:numtide/flake-utils";
-  inputs.flake-compat.url = "github:edolstra/flake-compat";
-  inputs.flake-compat.flake = false;
 
-  outputs = { nixpkgs, flake-utils, flake-compat, ... }:
+  outputs = { nixpkgs, flake-utils, ... }:
     (flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = nixpkgs.legacyPackages.${system};
@@ -48,6 +46,6 @@
           # See https://github.com/cachix/pre-commit-hooks.nix/pull/67
         };
       }
-    ))
-    // { inherit flake-compat; };
+    ));
+
 }
