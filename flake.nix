@@ -19,16 +19,26 @@
         epubinfo = pkgs.haskell.lib.justStaticExecutables epubinfo;
         default = self.packages.${system}.epubinfo;
       };
-      devShell = haskellPackages.shellFor {
-        packages = _p: [
-          epubinfo
-        ];
-        buildInputs = with haskellPackages; [
-          cabal-install
-          ghcid
-          cabal-install
-        ];
-        withHoogle = true;
+      devShells = {
+        default = haskellPackages.shellFor {
+          packages = _p: [
+            epubinfo
+          ];
+          buildInputs = with haskellPackages; [
+            cabal-install
+            ghcid
+            cabal-install
+          ];
+          withHoogle = true;
+        };
+
+        # A minimal devShell without extra buildInputs for printing the GHC
+        # version on CI.
+        ghc = pkgs.mkShell {
+          buildInputs = [
+            haskellPackages.ghc
+          ];
+        };
       };
     }
   ));
