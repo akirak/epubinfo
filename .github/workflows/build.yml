@@ -23,5 +23,7 @@ jobs:
         name: akirak
         skipPush: ${{ github.ref_name != 'master' }}
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+    - name: Print the GHC version
+      run: nix develop -c ghc --version
     - run: nix build
     - run: nix flake check
