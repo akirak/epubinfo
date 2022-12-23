@@ -10,7 +10,7 @@
       let
         pkgs = nixpkgs.legacyPackages.${system};
         gitignore = pkgs.nix-gitignore.gitignoreSourcePure [ ./.gitignore ];
-        myHaskellPackages = pkgs.haskell.packages.ghc884.override {
+        myHaskellPackages = pkgs.haskell.packages.ghc810.override {
           overrides = hself: _hsuper: {
             "epubinfo" =
               hself.callCabal2nix
