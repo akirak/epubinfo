@@ -1,6 +1,6 @@
 # epubinfo
 
-![CI](https://github.com/akirak/epubinfo/workflows/CI/badge.svg)
+[![Build executable](https://github.com/akirak/epubinfo/actions/workflows/build.yml/badge.svg)](https://github.com/akirak/epubinfo/actions/workflows/build.yml)
 [![Cachix Cache](https://img.shields.io/badge/cachix-akirak-blue.svg)](https://akirak.cachix.org)
 
 This is a small command line program which extract various information from an EPUB file. It is intended for use in scripting in Bash, Emacs Lisp, or whatever language you use.
