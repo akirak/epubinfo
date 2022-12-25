@@ -32,5 +32,5 @@ jobs:
         skipPush: ${{ github.ref_name != 'master' }}
         signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
     - name: Print the GHC version
-      run: nix develop .#ghc -c ghc --version
+      run: nix eval .#epubinfo.compiler.version
     - run: nix build

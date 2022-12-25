@@ -31,14 +31,6 @@
           ];
           withHoogle = true;
         };
-
-        # A minimal devShell without extra buildInputs for printing the GHC
-        # version on CI.
-        ghc = pkgs.mkShell {
-          buildInputs = [
-            haskellPackages.ghc
-          ];
-        };
       };
     }
   ));
