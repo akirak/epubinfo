@@ -25,7 +25,7 @@ jobs:
       # Explicitly check out a branch if called by a workflow_call event.
       # Otherwise, check out the default branch.
         ref: ${{ inputs.ref }}
-    - uses: cachix/install-nix-action@v20
+    - uses: cachix/install-nix-action@v21
     - uses: cachix/cachix-action@v12
       with:
         name: akirak
