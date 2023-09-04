@@ -20,7 +20,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
       # Explicitly check out a branch if called by a workflow_call event.
       # Otherwise, check out the default branch.
