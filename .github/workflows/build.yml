@@ -16,9 +16,19 @@ on:
     - flake.nix
     - flake.lock
     - '**/*.hs'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      matrix:
+        platform:
+          - ubuntu-latest
+          - macos-latest
     steps:
     - uses: actions/checkout@v3
       with:
@@ -30,7 +40,7 @@ jobs:
       with:
         name: akirak
         skipPush: ${{ github.ref_name != 'master' }}
-        signingKey: '${{ secrets.CACHIX_SIGNING_KEY }}'
+        signingKey: '${{ secrets.CACHIX_AUTH_TOKEN }}'
     - name: Print the GHC version
       run: nix eval .#epubinfo.compiler.version
     - run: nix build
