@@ -17,19 +17,17 @@ At present, EPUB 3 is only officially supported.
 
 ## Installation
 
-You can install the program using Nix with flakes enabled.
-
-First install [cachix](https://github.com/cachix/cachix) and enable the binary cache from my account:
+You can run/install the program using Nix:
 
 ``` shell
-cachix use akirak
+nix run github:akirak/epubinfo --accept-flake-config
 ```
 
-Then run a flake:
-
-``` shell
-nix run github:akirak/epubinfo
-```
+Binary cache is available from [Cachix](https://www.cachix.org/). Without
+`accept-flake-config` flag, Nix prompts you for approval of the cache usage. It
+is recommended to install the program from cache, since it is written in
+Haskell, which is slower at compilation than other mainstream language
+implementations.
 
 ## Usage
 
