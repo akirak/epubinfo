@@ -18,7 +18,12 @@ on:
     - '**/*.hs'
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      matrix:
+        platform:
+          - ubuntu-latest
+          - macos-latest
     steps:
     - uses: actions/checkout@v3
       with:
