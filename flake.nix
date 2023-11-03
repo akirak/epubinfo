@@ -1,6 +1,15 @@
 {
   description = "Extract metadata from an EPUB file";
 
+  nixConfig = {
+    extra-substituters = [
+      "https://akirak.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "akirak.cachix.org-1:WJrEMdV1dYyALkOdp/kAECVZ6nAODY5URN05ITFHC+M="
+    ];
+  };
+
   outputs = {
     self,
     nixpkgs,
@@ -8,7 +17,6 @@
     ...
   }: (flake-utils.lib.eachDefaultSystem (
     system: let
-
       pkgs = nixpkgs.legacyPackages.${system};
 
       inherit (pkgs) haskellPackages;
