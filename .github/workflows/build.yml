@@ -36,7 +36,7 @@ jobs:
       # Otherwise, check out the default branch.
         ref: ${{ inputs.ref }}
     - uses: cachix/install-nix-action@v24
-    - uses: cachix/cachix-action@v13
+    - uses: cachix/cachix-action@v14
       with:
         name: akirak
         skipPush: ${{ github.ref_name != 'master' }}
