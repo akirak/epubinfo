@@ -23,7 +23,7 @@ jobs:
 
     - run: nix flake update
 
-    - uses: peter-evans/create-pull-request@v6
+    - uses: peter-evans/create-pull-request@v7
       id: pr
       with:
         commit-message: 'Update flake inputs'
