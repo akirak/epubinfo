@@ -1,4 +1,3 @@
--- |
 module EPUBInfo.Document.Container
   ( Container,
     readContainer,
@@ -22,7 +21,7 @@ data EPUBNoRootFileError = EPUBNoRootFileError
 
 instance Exception EPUBNoRootFileError
 
-getOpfPath :: MonadThrow m => Container -> m FilePath
+getOpfPath :: (MonadThrow m) => Container -> m FilePath
 getOpfPath (Container cursor) =
   case fromCursor cursor of
     [] -> throwM EPUBNoRootFileError
@@ -32,4 +31,4 @@ getOpfPath (Container cursor) =
     fromCursor =
       C.element "{urn:oasis:names:tc:opendocument:xmlns:container}container"
         C.&// C.element "{urn:oasis:names:tc:opendocument:xmlns:container}rootfile"
-        >=> C.attribute "full-path"
+          >=> C.attribute "full-path"

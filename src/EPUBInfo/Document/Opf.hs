@@ -89,7 +89,7 @@ data OpfAttributeNotFound = OpfAttributeNotFound
 
 instance Exception OpfAttributeNotFound
 
-getMetadataFromOpf :: MonadThrow m => OpfDocument -> m EPUBMetadata
+getMetadataFromOpf :: (MonadThrow m) => OpfDocument -> m EPUBMetadata
 getMetadataFromOpf (OpfDocument rootCursor) =
   case (opfPackage C.&/ opfMetadata) rootCursor of
     [] -> throwM $ OpfElementNotFound "metadata"
@@ -200,7 +200,7 @@ metaEntry c =
 -- | Return href attribute of the nav item.
 --
 -- Note that the result will be a relative path from the opf document.
-getNavDocumentPathMaybe :: MonadThrow m => OpfDocument -> m (Maybe FilePath)
+getNavDocumentPathMaybe :: (MonadThrow m) => OpfDocument -> m (Maybe FilePath)
 getNavDocumentPathMaybe (OpfDocument root) =
   fmap unpack
     <$> lookupItemAttributeInManifest
@@ -212,7 +212,7 @@ getNavDocumentPathMaybe (OpfDocument root) =
 -- | Return href attribute of ncx.
 --
 -- Note that the result will be a relative path from the opf document.
-getNcxPathMaybe :: MonadThrow m => OpfDocument -> m (Maybe FilePath)
+getNcxPathMaybe :: (MonadThrow m) => OpfDocument -> m (Maybe FilePath)
 getNcxPathMaybe (OpfDocument root) =
   fmap unpack
     <$> lookupItemAttributeInManifest
@@ -221,7 +221,7 @@ getNcxPathMaybe (OpfDocument root) =
       (item C.>=> C.attributeIs "media-type" "application/x-dtbncx+xml")
       "href"
 
-lookupCover :: MonadThrow m => OpfDocument -> m (Maybe (Maybe Text, FilePath))
+lookupCover :: (MonadThrow m) => OpfDocument -> m (Maybe (Maybe Text, FilePath))
 lookupCover doc = do
   metadata <- getMetadataFromOpf doc
   case coverFileName metadata of
@@ -229,7 +229,7 @@ lookupCover doc = do
     Just filepath ->
       return $ Just (coverMediaType metadata, filepath)
 
-lookupCoverById :: MonadThrow m => Text -> C.Cursor -> m (Maybe Text, FilePath)
+lookupCoverById :: (MonadThrow m) => Text -> C.Cursor -> m (Maybe Text, FilePath)
 lookupCoverById coverId root = do
   mItem <- lookupElementInManifest root (item >=> C.attributeIs "id" coverId)
   case mItem of
@@ -241,7 +241,7 @@ lookupCoverById coverId root = do
         (path : _) -> return (mediaType, unpack path)
 
 lookupItemAttributeInManifest ::
-  MonadThrow m =>
+  (MonadThrow m) =>
   C.Cursor ->
   String ->
   C.Axis ->
@@ -256,7 +256,7 @@ lookupItemAttributeInManifest root description axis attrName = do
         [] -> throwM $ OpfAttributeNotFound description attrName
         (value : _) -> return $ Just value
 
-lookupElementInManifest :: MonadThrow m => C.Cursor -> C.Axis -> m (Maybe C.Cursor)
+lookupElementInManifest :: (MonadThrow m) => C.Cursor -> C.Axis -> m (Maybe C.Cursor)
 lookupElementInManifest root axis =
   case opfManifest root of
     [] -> throwM $ OpfElementNotFound "manifest"
@@ -276,5 +276,5 @@ item = C.element "{http://www.idpf.org/2007/opf}item"
 -- Utilities
 
 -- | Extract something from an embedded JSON.
-decodeJsonText :: A.FromJSON a => Text -> Maybe a
+decodeJsonText :: (A.FromJSON a) => Text -> Maybe a
 decodeJsonText = A.decodeStrict . T.encodeUtf8

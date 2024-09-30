@@ -76,7 +76,8 @@ pCoverArguments =
     <$> optional
       ( option
           str
-          ( long "output-file" <> short 'o'
+          ( long "output-file"
+              <> short 'o'
               <> metavar "FILE"
               <> help "Output file"
           )
@@ -84,7 +85,8 @@ pCoverArguments =
     <*> flag
       False
       True
-      ( long "force" <> short 'f'
+      ( long "force"
+          <> short 'f'
           <> help "Overwrite the output file if it exists"
       )
     <*> fileArgument
@@ -158,7 +160,8 @@ printMetadata file =
 printTableOfContents :: TocArguments -> IO ()
 printTableOfContents TocArguments {..} =
   withEPUBFile tocFile getTableOfContents
-    >>= T.putStr . renderer tocRenderOptions
+    >>= T.putStr
+    . renderer tocRenderOptions
   where
     renderer = case tocFormat of
       TocMarkdown -> tocToMarkdown

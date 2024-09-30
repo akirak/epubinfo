@@ -40,7 +40,7 @@ instance ToTableOfContents NcxDocument where
           <$> tocEntry navPointC
           <*> mapM go (navPointC C.$/ navPoint)
 
-tocEntry :: MonadThrow m => C.Cursor -> m TocEntry
+tocEntry :: (MonadThrow m) => C.Cursor -> m TocEntry
 tocEntry navPointC =
   TocEntry
     <$> findTitle

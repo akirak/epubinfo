@@ -1,4 +1,3 @@
--- |
 module EPUBInfo
   ( withEPUBFile,
     ZipExtractError (..),

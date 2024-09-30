@@ -1,6 +1,5 @@
 {-# LANGUAGE OverloadedStrings #-}
 
--- |
 module EPUBInfo.Document.Nav
   ( -- * Nav document
     NavDocument,
@@ -44,7 +43,7 @@ instance ToTableOfContents NavDocument where
         case c C.$/ C.anyElement of
           [] -> throwM NavEmpty
           [ol] -> TableOfContents <$> xmlToTocNodes ol
-          [_h,ol] -> TableOfContents <$> xmlToTocNodes ol
+          [_h, ol] -> TableOfContents <$> xmlToTocNodes ol
           _ -> throwM $ NavOther "The nav element contains multiple children"
 
 navElement :: C.Axis
@@ -52,7 +51,7 @@ navElement =
   C.element "{http://www.w3.org/1999/xhtml}nav"
     C.>=> C.attributeIs "{http://www.idpf.org/2007/ops}type" "toc"
 
-xmlToTocNodes :: MonadThrow m => C.Cursor -> m [TocNode]
+xmlToTocNodes :: (MonadThrow m) => C.Cursor -> m [TocNode]
 xmlToTocNodes = goList
   where
     goList listC =
