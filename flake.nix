@@ -47,6 +47,7 @@
               ormolu.enable = true;
               cabal-fmt.enable = true;
               nixfmt.enable = true;
+              biome.enable = true;
               # Disable hlint for now as I don't want to fix the warnings for
               # now
               #
