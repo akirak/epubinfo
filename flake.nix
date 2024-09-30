@@ -1,6 +1,13 @@
 {
   description = "Extract metadata from an EPUB file";
 
+  inputs = {
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    flake-parts.url = "github:hercules-ci/flake-parts";
+    systems.url = "github:nix-systems/default";
+    haskell-flake.url = "github:srid/haskell-flake";
+  };
+
   nixConfig = {
     extra-substituters = [
       "https://akirak.cachix.org"
@@ -10,36 +17,25 @@
     ];
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    flake-utils,
-    ...
-  }: (flake-utils.lib.eachDefaultSystem (
-    system: let
-      pkgs = nixpkgs.legacyPackages.${system};
+  outputs =
+    inputs@{ self, flake-parts, ... }:
+    flake-parts.lib.mkFlake { inherit inputs; } {
+      imports = [
+        inputs.haskell-flake.flakeModule
+      ];
+      systems = import inputs.systems;
+      perSystem =
+        {
+          system,
+          ...
+        }:
+        {
+          haskellProjects.default = {
+            packages = { };
+            settings = { };
+          };
 
-      inherit (pkgs) haskellPackages;
-
-      epubinfo = haskellPackages.callCabal2nix "epubinfo" ./. {};
-    in rec {
-      packages = {
-        epubinfo = pkgs.haskell.lib.justStaticExecutables epubinfo;
-        default = self.packages.${system}.epubinfo;
-      };
-      devShells = {
-        default = haskellPackages.shellFor {
-          packages = _p: [
-            epubinfo
-          ];
-          buildInputs = with haskellPackages; [
-            cabal-install
-            ghcid
-            cabal-install
-          ];
-          withHoogle = true;
+          packages.default = self.packages.${system}.epubinfo;
         };
-      };
-    }
-  ));
+    };
 }
