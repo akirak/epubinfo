@@ -1,6 +1,5 @@
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 
--- |
 module EPUBInfo.Monad
   ( EPUBM,
     runEPUBM,
@@ -29,7 +28,7 @@ newtype EPUBM a = EPUBM (CatchT (Reader Z.Archive) a)
   deriving (Functor, Applicative, Monad, MonadThrow)
 
 -- | Do a certain operation on an EPUB archive.
-runEPUBM :: MonadThrow m => EPUBM a -> Z.Archive -> m a
+runEPUBM :: (MonadThrow m) => EPUBM a -> Z.Archive -> m a
 runEPUBM (EPUBM m) archive = do
   let r = runReader (runCatchT m) archive
   case r of
@@ -67,7 +66,7 @@ readXmlInArchive relativePath = EPUBM $ do
         `C.catch` (throwM . EPUBXmlError relativePath)
 
 -- | Parse an XML document from a lazy bytestring.
-parseXmlLbs :: MonadThrow m => LByteString -> m X.Document
+parseXmlLbs :: (MonadThrow m) => LByteString -> m X.Document
 parseXmlLbs = decodeToText >=> parseXmlFromText
   where
     decodeToText lbs =

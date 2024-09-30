@@ -1,18 +1,19 @@
 -- | Data types for the table of contents of a document
-
 module EPUBInfo.Toc
   ( -- * Data types
-    TableOfContents(..),
-    TocNode(..),
-    TocEntry(..),
+    TableOfContents (..),
+    TocNode (..),
+    TocEntry (..),
+
     -- * Type classes
-    ToTableOfContents(..),
+    ToTableOfContents (..),
+
     -- * Rendering
-    TocRenderOptions(..),
+    TocRenderOptions (..),
     tocToOrg,
     tocToMarkdown,
   )
-  where
+where
 
 import Control.Monad.Catch (MonadThrow (..))
 import qualified Data.Text as T
@@ -34,7 +35,7 @@ data TocEntry = TocEntry
   deriving (Show)
 
 class ToTableOfContents a where
-  toTableOfContents :: MonadThrow m => a -> m TableOfContents
+  toTableOfContents :: (MonadThrow m) => a -> m TableOfContents
 
 data TocRenderOptions = TocRenderOptions
   { tocCheckbox :: Bool,

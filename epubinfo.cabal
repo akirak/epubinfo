@@ -1,48 +1,52 @@
-cabal-version: 1.12
+cabal-version:      1.12
 
 -- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
 
-name:           epubinfo
-version:        0.0.2
-synopsis:       Extract information from EPUB
-category:       codec program
-homepage:       https://github.com/akirak/epubinfo
-bug-reports:    https://github.com/akirak/epubinfo/issues
-author:         Akira Komamura
-maintainer:     Akira Komamura
-copyright:      Copyright (c) 2020-2021 Akira Komamura
-license:        BSD3
-license-file:   LICENSE
-build-type:     Simple
-extra-source-files:
-    README.md
+name:               epubinfo
+version:            0.0.2
+synopsis:           Extract information from EPUB
+category:           codec program
+homepage:           https://github.com/akirak/epubinfo
+bug-reports:        https://github.com/akirak/epubinfo/issues
+author:             Akira Komamura
+maintainer:         Akira Komamura
+copyright:          Copyright (c) 2020-2021 Akira Komamura
+license:            BSD3
+license-file:       LICENSE
+build-type:         Simple
+extra-source-files: README.md
 
 source-repository head
-  type: git
+  type:     git
   location: https://github.com/akirak/epubinfo
 
 executable epubinfo
-  main-is: Main.hs
+  main-is:            Main.hs
   other-modules:
-      EPUBInfo
-      EPUBInfo.Document
-      EPUBInfo.Document.Container
-      EPUBInfo.Document.Nav
-      EPUBInfo.Document.Ncx
-      EPUBInfo.Document.Opf
-      EPUBInfo.Monad
-      EPUBInfo.Toc
-      EPUBInfo.Utils
-      Paths_epubinfo
-  hs-source-dirs:
-      src
-  default-extensions: NoImplicitPrelude RecordWildCards OverloadedStrings PatternGuards
-  ghc-options: -Wall -fno-warn-name-shadowing -threaded -O2 -rtsopts
+    EPUBInfo
+    EPUBInfo.Document
+    EPUBInfo.Document.Container
+    EPUBInfo.Document.Nav
+    EPUBInfo.Document.Ncx
+    EPUBInfo.Document.Opf
+    EPUBInfo.Monad
+    EPUBInfo.Toc
+    EPUBInfo.Utils
+    Paths_epubinfo
+
+  hs-source-dirs:     src
+  default-extensions:
+    NoImplicitPrelude
+    OverloadedStrings
+    PatternGuards
+    RecordWildCards
+
+  ghc-options:        -Wall -fno-warn-name-shadowing -threaded -O2 -rtsopts
   build-depends:
       aeson
-    , base >=4.11 && <5
+    , base             >=4.11 && <5
     , bytestring
     , containers
     , directory
@@ -53,4 +57,5 @@ executable epubinfo
     , text
     , xml-conduit
     , zip-archive
-  default-language: Haskell2010
+
+  default-language:   Haskell2010

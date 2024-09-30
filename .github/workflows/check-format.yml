@@ -1,0 +1,24 @@
+name: Check format
+on:
+  workflow_dispatch:
+  pull_request:
+    paths-ignore:
+      - '**.md'
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      matrix:
+        platform:
+          - ubuntu-latest
+          - macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v29
+      - name: Check format
+        run: |
+          system="$(nix eval --expr builtins.currentSystem --impure)"
+          nix build ".#checks.$system.treefmt" -L

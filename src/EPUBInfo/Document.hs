@@ -1,4 +1,3 @@
--- |
 module EPUBInfo.Document
   ( -- * High-level operations
     getMetadata,
