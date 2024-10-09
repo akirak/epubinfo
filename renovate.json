@@ -6,14 +6,13 @@
 		{
 			"matchDatasources": ["github-actions"],
 			"groupName": "Actions",
-			"automergeSchedule": ["before 4am"],
+			"extends": ["schedule:automergeDaily"],
 			"automerge": true
 		},
 		{
 			"matchUpdateTypes": ["lockFileMaintenance"],
 			"groupName": "Maintenance",
-			"schedule": ["before 4am on the first day of the month"],
-			"automergeSchedule": ["before 11pm every weekday"],
+			"extends": ["schedule:automergeDaily", "schedule:monthly"],
 			"automerge": true
 		}
 	],
