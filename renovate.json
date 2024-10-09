@@ -4,7 +4,7 @@
 	"labels": ["automation", "dependencies"],
 	"packageRules": [
 		{
-			"matchDatasources": ["github-actions"],
+			"matchManagers": ["github-actions"],
 			"groupName": "Actions",
 			"extends": ["schedule:automergeDaily"],
 			"automerge": true
