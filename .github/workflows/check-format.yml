@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: cachix/install-nix-action@v29
+      - uses: cachix/install-nix-action@v30
       - name: Check format
         run: |
           system="$(nix eval --expr builtins.currentSystem --impure)"
