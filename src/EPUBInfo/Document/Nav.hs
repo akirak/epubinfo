@@ -66,7 +66,7 @@ xmlToTocNodes = goList
         <*> ( case itemC C.$/ C.element "{http://www.w3.org/1999/xhtml}ol" of
                 [] -> return []
                 [ol] -> goList ol
-                _ -> throwM $ NavMatchError "mroe than one lists"
+                _ -> throwM $ NavMatchError "more than one lists"
             )
     goEntry anchorC = do
       let contents = anchorC C.$/ C.content
