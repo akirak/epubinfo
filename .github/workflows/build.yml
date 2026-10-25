@@ -24,19 +24,22 @@ concurrency:
 jobs:
   build:
     runs-on: ${{ matrix.platform }}
+    permissions:
+      contents: read
     strategy:
       matrix:
         platform:
           - ubuntu-latest
           - macos-latest
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       with:
       # Explicitly check out a branch if called by a workflow_call event.
       # Otherwise, check out the default branch.
         ref: ${{ inputs.ref }}
-    - uses: cachix/install-nix-action@v31
-    - uses: cachix/cachix-action@v16
+        persist-credentials: false
+    - uses: cachix/install-nix-action@d9186cbdca7adedf113a159fa91f725a27866771 # v31
+    - uses: cachix/cachix-action@97e5ff84d02b3b4f9936339f767e17f03c9252ed # v16
       with:
         name: akirak
         skipPush: ${{ github.ref_name != 'master' }}
